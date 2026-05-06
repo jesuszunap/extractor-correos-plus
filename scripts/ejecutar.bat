@@ -1,42 +1,58 @@
+```bat
 @echo off
+title Extractor Correos +
 
-REM --- Ir a la carpeta donde está el .py ---
+REM ===== Ir a carpeta SRC =====
 cd /d "%~dp0\..\src"
 
-REM --- Actualizar desde Github ---
-git pull
-
 cls
+echo ============================================
+echo           EXTRACTOR CORREOS +
+echo ============================================
+echo.
 
-REM --- Verificar si Python está instalado ---
+REM ===== Verificar Python =====
 python --version >nul 2>&1
+
 IF %ERRORLEVEL% NEQ 0 (
-    echo ERROR: Python no esta instalado en esta PC.
-    echo Por favor instala Python desde la carpeta Utils.
+    echo ERROR: Python no esta instalado.
+    echo.
+    echo Instale Python desde la carpeta:
+    echo utils
+    echo.
     pause
     exit /b
 )
 
-@REM echo.
 echo Python detectado correctamente.
 echo.
 
+REM ===== Verificar personas.json =====
+IF NOT EXIST personas.json (
+    echo ERROR: No se encontro personas.json
+    echo.
+    echo Copie el archivo dentro de:
+    echo src\
+    echo.
+    pause
+    exit /b
+)
+
+REM ===== Instalar dependencias =====
 cd /d "%~dp0\..\docs"
-REM --- Instalar dependencias ---
-echo Instalando dependencias . . .
-echo.
-@REM IF EXIST requirements.txt (
-@REM     python -m pip install --upgrade pip >nul
-@REM     python -m pip install -r requirements.txt
-@REM )
+
+IF EXIST requirements.txt (
+    echo Verificando dependencias...
+    echo.
+    python -m pip install -r requirements.txt >nul 2>&1
+)
+
+REM ===== Ejecutar programa =====
+cd /d "%~dp0\..\src"
 
 cls
-
-cd /d "%~dp0\..\src"
-REM --- Ejecutar el script principal ---
 python extractor_de_correos.py
 
+echo.
 pause
-
-
-
+```

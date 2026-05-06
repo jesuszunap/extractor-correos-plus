@@ -1,11 +1,13 @@
+```bat
 @echo off
+title Crear acceso directo - Extractor Correos +
 
-REM ====== Rutas ======
+REM ===== Rutas =====
 set TARGET=%~dp0\scripts\ejecutar.bat
 set ICON=%~dp0\icons\icono_mail.ico
-set SHORTCUT_PATH=%USERPROFILE%\Desktop\Extractor de Correos.lnk
+set SHORTCUT_PATH=%USERPROFILE%\Desktop\Extractor Correos +.lnk
 
-@REM Convertir rutas a formato PowerShell seguro
+REM ===== Convertir rutas =====
 for %%A in ("%TARGET%") do set "PTARGET=%%~fA"
 for %%A in ("%ICON%") do set "PICON=%%~fA"
 for %%A in ("%SHORTCUT_PATH%") do set "PSHORTCUT=%%~fA"
@@ -18,7 +20,14 @@ powershell -NoProfile -Command ^
     "$S.IconLocation = '%PICON%'; " ^
     "$S.Save()"
 
-@echo Acceso directo creado correctamente.
-@echo.
+cls
+echo ============================================
+echo     ACCESO DIRECTO CREADO CORRECTAMENTE
+echo ============================================
+echo.
+echo Nombre:
+echo Extractor Correos +
+echo.
 
 pause
+```
