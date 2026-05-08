@@ -378,14 +378,15 @@ def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
 
     wb = load_workbook(ruta_excel)
     ws = wb.active
+    ws.title = "Recibidos" if tipo_exportacion == "recibidos" else "Enviados"
 
     for row in ws.iter_rows():
         for celda in row:
             celda.font = Font(name="Arial", size=12)
             celda.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
 
-    if ws.max_column >= 9:
-        for celda in ws["I"]:
+    if ws.max_column >= 10:
+        for celda in ws["J"]:
             celda.font = Font(name="Arial", size=12, color="FF0000", bold=True)
             celda.alignment = Alignment(horizontal="center", vertical="center")
 
@@ -409,14 +410,15 @@ def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
         for cell in row:
             cell.border = thin_border
 
+
     for col in ws.columns:
         column = get_column_letter(col[0].column)
         ws.column_dimensions[column].width = 20.71
 
     if ws.max_column >= 7:
         ws.column_dimensions["G"].width = 30.71
-    if ws.max_column >= 9:
-        ws.column_dimensions["I"].width = 30.71
+    if ws.max_column >= 10:
+        ws.column_dimensions["J"].width = 36
 
     for row in ws.iter_rows():
         celda = row[0]
@@ -436,11 +438,26 @@ def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
     tabla = Table(displayName="Exportados", ref=rango_tabla)
     estilo = TableStyleInfo(
         name="TableStyleMedium2",
+        showFirstColumn=False,
+        showLastColumn=False,
         showRowStripes=True,
         showColumnStripes=False
     )
     tabla.tableStyleInfo = estilo
     ws.add_table(tabla)
+
+    ultima_columna = get_column_letter(ws.max_column)
+
+    for fila in range(1, ws.max_row + 1):
+        celda = ws[f"{ultima_columna}{fila}"]
+
+        celda.border = Border(
+            left=celda.border.left,
+            right=Side(style="thin"),
+            top=celda.border.top,
+            bottom=celda.border.bottom
+        )
+
     ws.sheet_view.zoomScale = 80
     wb.save(ruta_excel)
 
@@ -692,8 +709,8 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                 )
 
                 registros.append({
-                    "Tipo de Correo": "Recibido" if tipo_exportacion == "recibidos" else "Enviado",
-                    "Fecha del Documento": fecha_py.strftime("%Y-%m-%d %H:%M:%S"),
+                    "Tipo de Documento": "CORREO INSTITUCIONAL",
+                    "Fecha del Documento": fecha_py.strftime("%Y-%m-%d"),
                     "Remitente": nompropio_python(remitente_filtrado),
                     "Cargo": cargo,
                     "Facultad/Dependencia": dependencia,

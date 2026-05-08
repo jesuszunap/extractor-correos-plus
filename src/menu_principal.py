@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox
-
+import pythoncom
 from extractor_de_correos import (
     procesar_exportacion,
     obtener_rango_dia,
@@ -23,10 +23,8 @@ CONFIGURADOR_PY = BASE_DIR / "configurar_personas.py"
 PERSONAS_JSON = BASE_DIR / "personas.json"
 
 APP_NAME = "Extractor Correos +"
-MESES = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-]
+ANIO_MINIMO = 2008
+ANIO_ACTUAL = datetime.now().year
 
 
 # ============================================================
@@ -43,12 +41,30 @@ def existe_archivo(path: Path, nombre: str) -> bool:
     return True
 
 
-def ejecutar_python(path: Path):
-    return subprocess.Popen(
-        [sys.executable, str(path)],
-        cwd=str(BASE_DIR),
-        creationflags=subprocess.CREATE_NEW_CONSOLE if sys.platform.startswith("win") else 0
-    )
+def ejecutar_python_oculto(path: Path):
+    """
+    Ejecuta otro archivo Python sin mostrar ventana adicional de consola.
+    En Windows intenta usar pythonw.exe; si no existe, usa sys.executable ocultando ventana.
+    """
+    executable = Path(sys.executable)
+
+    if executable.name.lower() == "python.exe":
+        pythonw = executable.with_name("pythonw.exe")
+        if pythonw.exists():
+            executable = pythonw
+
+    kwargs = {
+        "cwd": str(BASE_DIR),
+    }
+
+    if sys.platform.startswith("win"):
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+        kwargs["startupinfo"] = startupinfo
+        kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+
+    return subprocess.Popen([str(executable), str(path)], **kwargs)
 
 
 # ============================================================
@@ -60,20 +76,17 @@ class MenuPrincipalApp(tk.Tk):
         super().__init__()
 
         self.title(APP_NAME)
-        self.geometry("700x620")
-        self.minsize(700, 620)
-        self.resizable(False, False)
+        self.geometry("820x660")
+        self.minsize(820, 660)
+        self.resizable(True, True)
 
         self.tipo_exportacion = tk.StringVar(value="recibidos")
         self.mes_completo = tk.BooleanVar(value=False)
 
         hoy = datetime.now()
-        self.dia_var = tk.StringVar(value=str(hoy.day))
+        self.dia_var = tk.StringVar(value="")
         self.mes_var = tk.StringVar(value=str(hoy.month))
-        self.anio_var = tk.StringVar(value=str(hoy.year))
-
-        self.mes_combo_var = tk.StringVar(value=MESES[hoy.month - 1])
-        self.anio_mes_var = tk.StringVar(value=str(hoy.year))
+        self.anio_var = tk.IntVar(value=hoy.year)
 
         self.estado_var = tk.StringVar(value=self.obtener_estado_inicial())
         self.resultado_carpeta = None
@@ -97,38 +110,39 @@ class MenuPrincipalApp(tk.Tk):
         except Exception:
             pass
 
-        style.configure("Titulo.TLabel", font=("Segoe UI", 18, "bold"))
-        style.configure("Subtitulo.TLabel", font=("Segoe UI", 10))
-        style.configure("Seccion.TLabelframe.Label", font=("Segoe UI", 10, "bold"))
-        style.configure("BotonGrande.TButton", font=("Segoe UI", 11, "bold"), padding=10)
-        style.configure("Info.TLabel", font=("Segoe UI", 9))
-        style.configure("Resultado.TLabel", font=("Segoe UI", 10, "bold"))
+        self.option_add("*Font", ("Segoe UI", 13))
+
+        style.configure("Titulo.TLabel", font=("Segoe UI", 24, "bold"))
+        style.configure("Subtitulo.TLabel", font=("Segoe UI", 14))
+        style.configure("Seccion.TLabelframe.Label", font=("Segoe UI", 14, "bold"))
+        style.configure("TLabel", font=("Segoe UI", 13))
+        style.configure("TRadiobutton", font=("Segoe UI", 13))
+        style.configure("TCheckbutton", font=("Segoe UI", 13))
+        style.configure("TEntry", font=("Segoe UI", 13), padding=4)
+        style.configure("TButton", font=("Segoe UI", 13), padding=8)
+        style.configure("BotonGrande.TButton", font=("Segoe UI", 15, "bold"), padding=12)
+        style.configure("Info.TLabel", font=("Segoe UI", 12))
 
     # --------------------------------------------------------
     # Interfaz
     # --------------------------------------------------------
 
     def crear_interfaz(self):
-        contenedor = ttk.Frame(self, padding=20)
+        contenedor = ttk.Frame(self, padding=14)
         contenedor.pack(fill="both", expand=True)
 
-        ttk.Label(contenedor, text=APP_NAME, style="Titulo.TLabel").pack(anchor="center")
-        ttk.Label(
-            contenedor,
-            text="Exportación de correos institucionales y gestión de personas",
-            style="Subtitulo.TLabel"
-        ).pack(anchor="center", pady=(6, 16))
+        ttk.Frame(contenedor).pack(pady=(2, 2))
 
         # Tipo de exportación
-        frame_tipo = ttk.LabelFrame(contenedor, text="Tipo de exportación", padding=12, style="Seccion.TLabelframe")
-        frame_tipo.pack(fill="x", pady=(0, 12))
+        frame_tipo = ttk.LabelFrame(contenedor, text="Tipo de exportación", padding=14, style="Seccion.TLabelframe")
+        frame_tipo.pack(fill="x", pady=(0, 14))
 
         ttk.Radiobutton(
             frame_tipo,
             text="Correos recibidos",
             variable=self.tipo_exportacion,
             value="recibidos"
-        ).grid(row=0, column=0, sticky="w", padx=(0, 24))
+        ).grid(row=0, column=0, sticky="w", padx=(0, 36))
 
         ttk.Radiobutton(
             frame_tipo,
@@ -138,8 +152,8 @@ class MenuPrincipalApp(tk.Tk):
         ).grid(row=0, column=1, sticky="w")
 
         # Fecha
-        frame_fecha = ttk.LabelFrame(contenedor, text="Fecha de exportación", padding=12, style="Seccion.TLabelframe")
-        frame_fecha.pack(fill="x", pady=(0, 12))
+        frame_fecha = ttk.LabelFrame(contenedor, text="Fecha de exportación", padding=14, style="Seccion.TLabelframe")
+        frame_fecha.pack(fill="x", pady=(0, 14))
 
         self.check_mes = ttk.Checkbutton(
             frame_fecha,
@@ -147,33 +161,57 @@ class MenuPrincipalApp(tk.Tk):
             variable=self.mes_completo,
             command=self.actualizar_modo_fecha
         )
-        self.check_mes.grid(row=0, column=0, columnspan=6, sticky="w", pady=(0, 10))
 
-        ttk.Label(frame_fecha, text="Día:").grid(row=1, column=0, sticky="w")
+        self.tipo_exportacion.set("recibidos")
+        self.check_mes.grid(row=0, column=0, columnspan=5, sticky="w", pady=(0, 12))
+
+        self.dia_label = ttk.Label(frame_fecha, text="Día:")
+        self.dia_label.grid(row=1, column=0, sticky="w")
         self.dia_entry = ttk.Entry(frame_fecha, textvariable=self.dia_var, width=8)
-        self.dia_entry.grid(row=1, column=1, sticky="w", padx=(6, 16))
+        self.dia_entry.grid(row=1, column=1, sticky="w", padx=(8, 22))
 
         ttk.Label(frame_fecha, text="Mes:").grid(row=1, column=2, sticky="w")
-        self.mes_entry = ttk.Entry(frame_fecha, textvariable=self.mes_var, width=8)
-        self.mes_entry.grid(row=1, column=3, sticky="w", padx=(6, 16))
 
-        ttk.Label(frame_fecha, text="Año:").grid(row=1, column=4, sticky="w")
-        self.anio_entry = ttk.Entry(frame_fecha, textvariable=self.anio_var, width=10)
-        self.anio_entry.grid(row=1, column=5, sticky="w", padx=(6, 0))
+        meses_display = [
+            "(1) Enero",
+            "(2) Febrero",
+            "(3) Marzo",
+            "(4) Abril",
+            "(5) Mayo",
+            "(6) Junio",
+            "(7) Julio",
+            "(8) Agosto",
+            "(9) Septiembre",
+            "(10) Octubre",
+            "(11) Noviembre",
+            "(12) Diciembre",
+        ]
 
-        ttk.Label(frame_fecha, text="Mes completo:").grid(row=2, column=0, sticky="w", pady=(12, 0))
         self.mes_combo = ttk.Combobox(
             frame_fecha,
-            textvariable=self.mes_combo_var,
-            values=MESES,
+            values=meses_display,
             state="readonly",
-            width=16
+            width=18
         )
-        self.mes_combo.grid(row=2, column=1, columnspan=2, sticky="w", padx=(6, 16), pady=(12, 0))
 
-        ttk.Label(frame_fecha, text="Año:").grid(row=2, column=3, sticky="w", pady=(12, 0))
-        self.anio_mes_entry = ttk.Entry(frame_fecha, textvariable=self.anio_mes_var, width=10)
-        self.anio_mes_entry.grid(row=2, column=4, sticky="w", padx=(6, 0), pady=(12, 0))
+        self.mes_combo.grid(row=1, column=3, sticky="w", padx=(8, 22))
+
+        # Seleccionar mes actual automáticamente
+        self.mes_combo.current(datetime.now().month - 1)
+
+        ttk.Label(frame_fecha, text="Año:").grid(row=1, column=4, sticky="w")
+        self.anios_display = [str(a) for a in range(ANIO_ACTUAL, ANIO_MINIMO - 1, -1)]
+
+        self.anio_combo = ttk.Combobox(
+            frame_fecha,
+            values=self.anios_display,
+            state="readonly",
+            width=10
+        )
+        self.anio_combo.grid(row=1, column=5, sticky="w", padx=(8, 0))
+        self.anio_combo.set(str(ANIO_ACTUAL))
+
+        frame_fecha.columnconfigure(5, weight=1)
 
         # Botón principal
         self.boton_exportar = ttk.Button(
@@ -182,21 +220,21 @@ class MenuPrincipalApp(tk.Tk):
             style="BotonGrande.TButton",
             command=self.iniciar_exportacion
         )
-        self.boton_exportar.pack(fill="x", pady=(4, 12))
+        self.boton_exportar.pack(fill="x", pady=(4, 14))
 
         # Progreso
-        frame_progreso = ttk.LabelFrame(contenedor, text="Progreso", padding=12, style="Seccion.TLabelframe")
-        frame_progreso.pack(fill="x", pady=(0, 12))
+        frame_progreso = ttk.LabelFrame(contenedor, text="Progreso", padding=14, style="Seccion.TLabelframe")
+        frame_progreso.pack(fill="x", pady=(0, 14))
 
         self.progress = ttk.Progressbar(frame_progreso, mode="indeterminate")
-        self.progress.pack(fill="x", pady=(0, 8))
+        self.progress.pack(fill="x", pady=(0, 10))
 
         self.label_estado_progreso = ttk.Label(
             frame_progreso,
             textvariable=self.estado_var,
             style="Info.TLabel",
             foreground="#555",
-            wraplength=630
+            wraplength=690
         )
         self.label_estado_progreso.pack(anchor="w")
 
@@ -205,12 +243,12 @@ class MenuPrincipalApp(tk.Tk):
             text="Abrir carpeta de exportación",
             command=self.abrir_carpeta_resultado
         )
-        self.boton_abrir_carpeta.pack(fill="x", pady=(10, 0))
+        self.boton_abrir_carpeta.pack(fill="x", pady=(12, 0))
         self.boton_abrir_carpeta.pack_forget()
 
         # Herramientas secundarias
-        frame_herramientas = ttk.LabelFrame(contenedor, text="Herramientas", padding=12, style="Seccion.TLabelframe")
-        frame_herramientas.pack(fill="x", pady=(0, 12))
+        frame_herramientas = ttk.LabelFrame(contenedor, text="Herramientas", padding=14, style="Seccion.TLabelframe")
+        frame_herramientas.pack(fill="x", pady=(0, 14))
 
         ttk.Button(
             frame_herramientas,
@@ -227,8 +265,6 @@ class MenuPrincipalApp(tk.Tk):
         frame_herramientas.columnconfigure(0, weight=1)
         frame_herramientas.columnconfigure(1, weight=1)
 
-        ttk.Button(contenedor, text="Salir", command=self.destroy).pack(fill="x")
-
     # --------------------------------------------------------
     # Estado y validaciones
     # --------------------------------------------------------
@@ -241,15 +277,10 @@ class MenuPrincipalApp(tk.Tk):
     def actualizar_modo_fecha(self):
         usar_mes = self.mes_completo.get()
 
-        estado_fecha = "disabled" if usar_mes else "normal"
-        estado_mes = "readonly" if usar_mes else "disabled"
-        estado_anio_mes = "normal" if usar_mes else "disabled"
-
-        self.dia_entry.config(state=estado_fecha)
-        self.mes_entry.config(state=estado_fecha)
-        self.anio_entry.config(state=estado_fecha)
-        self.mes_combo.config(state=estado_mes)
-        self.anio_mes_entry.config(state=estado_anio_mes)
+        if usar_mes:
+            self.dia_entry.config(state="disabled")
+        else:
+            self.dia_entry.config(state="normal")
 
     def validar_entero(self, valor, nombre, minimo, maximo):
         try:
@@ -263,20 +294,25 @@ class MenuPrincipalApp(tk.Tk):
         return numero
 
     def obtener_parametros_exportacion(self):
-        tipo = self.tipo_exportacion.get()
+        tipo = self.tipo_exportacion.get().strip() or "recibidos"
 
         if tipo not in ["recibidos", "enviados"]:
             raise ValueError("Seleccione si desea exportar recibidos o enviados.")
 
+        mes_texto = self.mes_combo.get()
+
+        if not mes_texto:
+            raise ValueError("Seleccione un mes.")
+
+        mes = int(mes_texto.split(")")[0].replace("(", ""))
+
+        anio = int(self.anio_combo.get())
+
         if self.mes_completo.get():
-            mes = MESES.index(self.mes_combo_var.get()) + 1
-            anio = self.validar_entero(self.anio_mes_var.get(), "Año", 1900, 2100)
             fecha_inicio, fecha_fin, etiqueta, _mes_name, _anio = obtener_rango_mes(mes, anio)
             return tipo, fecha_inicio, fecha_fin, etiqueta
 
         dia = self.validar_entero(self.dia_var.get(), "Día", 1, 31)
-        mes = self.validar_entero(self.mes_var.get(), "Mes", 1, 12)
-        anio = self.validar_entero(self.anio_var.get(), "Año", 1900, 2100)
 
         try:
             fecha_inicio, fecha_fin, etiqueta, _mes_name, _anio = obtener_rango_dia(dia, mes, anio)
@@ -291,7 +327,12 @@ class MenuPrincipalApp(tk.Tk):
 
         self.boton_exportar.config(state=estado)
         self.check_mes.config(state=estado)
-        self.actualizar_modo_fecha()
+        self.dia_entry.config(state=estado)
+        self.mes_combo.config(state="disabled" if exportando else "readonly")
+        self.anio_combo.config(state="disabled" if exportando else "readonly")
+
+        if not exportando:
+            self.actualizar_modo_fecha()
 
         if exportando:
             self.progress.start(12)
@@ -333,6 +374,8 @@ class MenuPrincipalApp(tk.Tk):
         hilo.start()
 
     def ejecutar_exportacion_en_hilo(self, tipo, fecha_inicio, fecha_fin, etiqueta):
+        pythoncom.CoInitialize()
+
         try:
             resultado = procesar_exportacion(
                 tipo_exportacion=tipo,
@@ -345,7 +388,10 @@ class MenuPrincipalApp(tk.Tk):
             self.after(0, lambda: self.finalizar_exportacion(resultado))
 
         except Exception as e:
-            self.after(0, lambda: self.exportacion_con_error(e))
+            self.after(0, lambda error=e: self.exportacion_con_error(error))
+
+        finally:
+            pythoncom.CoUninitialize()
 
     def actualizar_progreso_desde_hilo(self, mensaje):
         self.after(0, lambda: self.estado_var.set(str(mensaje)))
@@ -356,8 +402,7 @@ class MenuPrincipalApp(tk.Tk):
 
         if resultado.exito and resultado.carpeta:
             self.resultado_carpeta = resultado.carpeta
-            self.boton_abrir_carpeta.pack(fill="x", pady=(10, 0))
-            messagebox.showinfo("Exportación completada", resultado.mensaje)
+            self.boton_abrir_carpeta.pack(fill="x", pady=(12, 0))
         else:
             self.resultado_carpeta = None
             self.boton_abrir_carpeta.pack_forget()
@@ -392,7 +437,7 @@ class MenuPrincipalApp(tk.Tk):
         if not existe_archivo(CONFIGURADOR_PY, "configurar_personas.py"):
             return
 
-        self.proceso_configurador = ejecutar_python(CONFIGURADOR_PY)
+        self.proceso_configurador = ejecutar_python_oculto(CONFIGURADOR_PY)
 
     def verificar_archivos(self):
         archivos = [

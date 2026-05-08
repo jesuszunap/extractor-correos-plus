@@ -28,7 +28,7 @@
         "vigente_hasta": null
       }
     ],
-    "ultima_actualizacion_manual": "2026-05-08 14:17:38"
+    "ultima_actualizacion_manual": "2026-05-08 14:00:46"
   },
   "personas": [
     {
@@ -2490,7 +2490,7 @@
       "titulo": "Señor Arquitecto",
       "titulo_abreviado": "Arq.",
       "cargo": "Jefe de Planificación de Obras",
-      "dependencia": "Dirección de Infraestructura y Obras Universitarias",
+      "dependencia": "Jefatura de Planificación de Obras Dirección de Infraestructura y Obras Universitarias",
       "email": "ricardo.valverdep@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",

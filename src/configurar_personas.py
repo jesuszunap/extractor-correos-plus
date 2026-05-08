@@ -285,7 +285,8 @@ class ConfigurarPersonasApp(tk.Tk):
         self.personas = self.data["personas"]
         self.filtro_var = tk.StringVar()
         self.estado_var = tk.StringVar(value="Todos")
-
+        self.hay_cambios = False
+        self.protocol("WM_DELETE_WINDOW", self.cerrar_aplicacion)
         self.crear_widgets()
         self.cargar_tabla()
 
@@ -350,6 +351,30 @@ class ConfigurarPersonasApp(tk.Tk):
 
         self.label_estado = ttk.Label(self, text="", anchor="w", padding=(10, 0, 10, 8))
         self.label_estado.pack(fill="x")
+
+    def marcar_cambios(self):
+        self.hay_cambios = True
+        self.title("Configurar Personas - Extractor Correos + *")
+
+    def cerrar_aplicacion(self):
+        if not self.hay_cambios:
+            self.destroy()
+            return
+
+        respuesta = messagebox.askyesnocancel(
+            "Cambios sin guardar",
+            "Hay cambios sin guardar.\n\n¿Desea guardar antes de cerrar?"
+        )
+
+        if respuesta is True:
+            guardado = self.guardar(mostrar_mensaje=False)
+            if guardado:
+                self.destroy()
+
+        elif respuesta is False:
+            self.destroy()
+
+    # Si respuesta es None, cancela el cierre.
 
     def limpiar_busqueda(self):
         self.filtro_var.set("")
@@ -423,6 +448,7 @@ class ConfigurarPersonasApp(tk.Tk):
 
         if dialog.resultado:
             self.personas.append(dialog.resultado)
+            self.marcar_cambios()
             self.cargar_tabla()
 
     def editar_persona(self):
@@ -435,6 +461,7 @@ class ConfigurarPersonasApp(tk.Tk):
 
         if dialog.resultado:
             self.personas[idx] = dialog.resultado
+            self.marcar_cambios()
             self.cargar_tabla()
             self.tree.selection_set(str(idx))
 
@@ -455,6 +482,7 @@ class ConfigurarPersonasApp(tk.Tk):
 
         if dialog.resultado:
             self.personas.append(dialog.resultado)
+            self.marcar_cambios()
             self.cargar_tabla()
 
     def eliminar_persona(self):
@@ -473,6 +501,7 @@ class ConfigurarPersonasApp(tk.Tk):
 
         if confirmar:
             del self.personas[idx]
+            self.marcar_cambios()
             self.cargar_tabla()
 
     def recargar(self):
@@ -487,17 +516,27 @@ class ConfigurarPersonasApp(tk.Tk):
         self.personas = self.data["personas"]
         self.cargar_tabla()
 
-    def guardar(self):
+    def guardar(self, mostrar_mensaje=True):
         try:
             backup = crear_backup()
             guardar_json(self.data)
+
+            self.hay_cambios = False
+            self.title("Configurar Personas - Extractor Correos +")
+
             mensaje = "personas.json guardado correctamente."
             if backup:
                 mensaje += f"\n\nBackup creado:\n{backup}"
-            messagebox.showinfo("Guardado", mensaje)
+
+            if mostrar_mensaje:
+                messagebox.showinfo("Guardado", mensaje)
+
             self.cargar_tabla()
+            return True
+
         except Exception as e:
             messagebox.showerror("Error al guardar", f"No se pudo guardar personas.json:\n\n{e}")
+            return False
 
     def ordenar_por_columna(self, columna, reversa):
         def valor(idx):
