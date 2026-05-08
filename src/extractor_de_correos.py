@@ -8,6 +8,7 @@ import pandas as pd
 
 from datetime import datetime, timedelta
 from pathlib import Path
+from calendar import monthrange
 
 from openpyxl import load_workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
@@ -37,6 +38,34 @@ REMITENTES_OMITIDOS = [
     "DepositPhotos",
 ]
 
+MESES = {
+    1: "Enero",
+    2: "Febrero",
+    3: "Marzo",
+    4: "Abril",
+    5: "Mayo",
+    6: "Junio",
+    7: "Julio",
+    8: "Agosto",
+    9: "Septiembre",
+    10: "Octubre",
+    11: "Noviembre",
+    12: "Diciembre",
+}
+
+
+# ============================================================
+# Resultado de exportación
+# ============================================================
+
+class ResultadoExportacion:
+    def __init__(self, exito=False, cantidad=0, carpeta=None, excel=None, mensaje=""):
+        self.exito = exito
+        self.cantidad = cantidad
+        self.carpeta = carpeta
+        self.excel = excel
+        self.mensaje = mensaje
+
 
 # ============================================================
 # Utilidades de texto
@@ -46,18 +75,10 @@ def limpiar_acortar_remitentes(texto):
     if not texto:
         return ""
     texto = str(texto).strip()
-
-    texto = re.sub(
-        r'[\\/:*?"<>|\r\n\t“”‘’´`]',
-        "_",
-        texto
-    )
-
+    texto = re.sub(r'[\\/:*?"<>|\r\n\t“”‘’´`]', "_", texto)
     texto = re.sub(r'\s+', " ", texto).strip()
-
     if len(texto) > 45:
         texto = texto[:45]
-
     return f"{texto}"
 
 
@@ -72,12 +93,7 @@ def limpiar_texto(nombre):
     else:
         base, ext = nombre, ""
 
-    base = re.sub(
-        r'[\\/:*?"<>|\r\n\t“”‘’´`]',
-        "_",
-        base
-    )
-
+    base = re.sub(r'[\\/:*?"<>|\r\n\t“”‘’´`]', "_", base)
     base = re.sub(r'\s+', " ", base).strip()
 
     if len(base) > 70:
@@ -89,13 +105,11 @@ def limpiar_texto(nombre):
 def quitar_acentos(texto):
     if not texto:
         return ""
-
     texto = str(texto)
-    texto = ''.join(
+    return ''.join(
         c for c in unicodedata.normalize('NFD', texto)
         if unicodedata.category(c) != 'Mn'
     )
-    return texto
 
 
 def limpiar_nombre(nombre):
@@ -103,16 +117,13 @@ def limpiar_nombre(nombre):
         return ""
 
     nombre = quitar_acentos(str(nombre).lower())
-
     nombre = re.sub(
         r'\b(arq|arquitecto|arquitecta|ing|ingeniero|ingeniera|lic|licenciado|licenciada|sr|sra|srta|senor|senora|senorita|dra|dr|ab|abogado|abogada|mgs|magister|phd|ph\.d)\.?',
         '',
         nombre
     )
-
     nombre = nombre.replace('.', '').replace(',', '')
     nombre = re.sub(r'\s+', ' ', nombre).strip()
-
     return nombre
 
 
@@ -139,10 +150,11 @@ def texto_normalizado(texto):
 # Carga y búsqueda de personas desde personas.json
 # ============================================================
 
+PERSONAS = []
+
+
 def cargar_personas():
     if not PERSONAS_JSON.exists():
-        print(Fore.YELLOW + f"\nAdvertencia: no se encontró {PERSONAS_JSON}")
-        print(Fore.YELLOW + "El programa continuará, pero no podrá reconocer personas desde JSON.\n")
         return []
 
     try:
@@ -163,44 +175,40 @@ def cargar_personas():
 
         return personas
 
-    except Exception as e:
-        print(Fore.RED + f"\nError leyendo personas.json: {e}")
-        print(Fore.YELLOW + "El programa continuará sin reconocimiento de personas.\n")
+    except Exception:
         return []
 
 
-PERSONAS = []
+def inicializar_personas():
+    global PERSONAS
+    PERSONAS = cargar_personas()
+    return PERSONAS
+
+
 def fecha_en_vigencia(persona, fecha_correo):
     """
-    Verifica si la fecha del correo cae dentro
-    de la vigencia del cargo.
+    Verifica si la fecha del correo cae dentro de la vigencia del cargo.
+    Si no hay fechas, el registro queda disponible como fallback.
     """
-
     desde = persona.get("vigente_desde")
     hasta = persona.get("vigente_hasta")
 
     try:
-
-        # Validar fecha inicio
         if desde:
             desde_dt = datetime.strptime(desde, "%Y-%m-%d")
-
             if fecha_correo < desde_dt:
                 return False
 
-        # Validar fecha fin
         if hasta:
             hasta_dt = datetime.strptime(hasta, "%Y-%m-%d")
-
             if fecha_correo > hasta_dt:
                 return False
 
         return True
 
     except Exception:
-        # Si hay error en formato de fecha,
-        # no bloquear el registro.
         return True
+
 
 def puntuar_persona(persona, texto):
     texto_original = str(texto or "")
@@ -231,7 +239,6 @@ def puntuar_persona(persona, texto):
 
     score += len(coincidencias) * 12
 
-    # Preferir registros activos cuando haya varias coincidencias similares.
     if persona.get("activo") is True:
         score += 5
     elif persona.get("activo") is False:
@@ -245,18 +252,10 @@ def buscar_persona(texto, fecha_correo=None, minimo=24):
     mejor_score = 0
 
     for persona in PERSONAS:
-
-        # Si se proporcionó fecha del correo,
-        # validar vigencia histórica del cargo.
-        if fecha_correo:
-
-            # Si la fecha NO entra en vigencia,
-            # omitir este registro.
-            if not fecha_en_vigencia(persona, fecha_correo):
-                continue
+        if fecha_correo and not fecha_en_vigencia(persona, fecha_correo):
+            continue
 
         score = puntuar_persona(persona, texto)
-
         if score > mejor_score:
             mejor = persona
             mejor_score = score
@@ -275,14 +274,13 @@ def formatear_persona(persona, usar_corto=False):
     nombre = persona.get("nombre_corto") if usar_corto else persona.get("nombre_completo")
     nombre = nombre or persona.get("nombre_corto") or ""
 
-    # Evitar duplicar título si ya viene en nombre_completo.
     if titulo and not nombre.lower().startswith(titulo.lower()):
         return f"{titulo} {nombre}".strip()
 
     return nombre.strip()
 
 
-def nombres_conocidos_cc(cc):
+def nombres_conocidos_cc(cc, fecha_correo=None):
     if not cc:
         return "-----"
 
@@ -290,7 +288,7 @@ def nombres_conocidos_cc(cc):
     resultado = []
 
     for parte in partes_cc:
-        persona = buscar_persona(parte)
+        persona = buscar_persona(parte, fecha_correo)
         if persona:
             nombre = formatear_persona(persona, usar_corto=True)
             if nombre and nombre not in resultado:
@@ -331,23 +329,19 @@ def cut_nombres_destinatarios(destinatario: str):
         if len(partes) == 1:
             resultado.append(partes[0])
         elif len(partes) == 2:
-            nombre = partes[0]
-            apellido = partes[1]
-            resultado.append(f"{nombre} {apellido}")
+            resultado.append(f"{partes[0]} {partes[1]}")
         else:
-            nombre = partes[0]
-            apellido = partes[-2]
-            resultado.append(f"{nombre} {apellido}")
+            resultado.append(f"{partes[0]} {partes[-2]}")
 
     return resultado
 
 
-def obtener_info_destinatarios(lista_nombres):
+def obtener_info_destinatarios(lista_nombres, fecha_correo=None):
     destinatarios = []
     cargos = []
 
     for nombre_abreviado in lista_nombres:
-        persona = buscar_persona(nombre_abreviado)
+        persona = buscar_persona(nombre_abreviado, fecha_correo)
 
         if persona:
             destinatarios.append(formatear_persona(persona, usar_corto=True))
@@ -355,7 +349,7 @@ def obtener_info_destinatarios(lista_nombres):
         else:
             destinatarios.append(nombre_abreviado)
 
-    return ("\n\n".join(destinatarios)), ("\n\n".join([c for c in cargos if c]))
+    return "\n\n".join(destinatarios), "\n\n".join([c for c in cargos if c])
 
 
 def obtener_info_remitente(remitente, fecha_correo=None):
@@ -372,90 +366,85 @@ def obtener_info_remitente(remitente, fecha_correo=None):
 # ============================================================
 
 def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
-    if registros:
-        df = pd.DataFrame(registros)
+    if not registros:
+        return None
 
-        sufijo = "Recibidos" if tipo_exportacion == "recibidos" else "Enviados"
-        ruta_excel = carpeta_base / f"{fecha_inicio_str}_Correos{sufijo}Exportados.xlsx"
+    df = pd.DataFrame(registros)
 
-        df.to_excel(ruta_excel, index=False)
+    sufijo = "Recibidos" if tipo_exportacion == "recibidos" else "Enviados"
+    ruta_excel = carpeta_base / f"{fecha_inicio_str}_Correos{sufijo}Exportados.xlsx"
 
-        wb = load_workbook(ruta_excel)
-        ws = wb.active
+    df.to_excel(ruta_excel, index=False)
 
-        for row in ws.iter_rows():
-            for celda in row:
-                celda.font = Font(name="Arial", size=12)
-                celda.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
+    wb = load_workbook(ruta_excel)
+    ws = wb.active
 
-        if ws.max_column >= 9:
-            for celda in ws["I"]:
-                celda.font = Font(name="Arial", size=12, color="FF0000", bold=True)
-                celda.alignment = Alignment(horizontal="center", vertical="center")
+    for row in ws.iter_rows():
+        for celda in row:
+            celda.font = Font(name="Arial", size=12)
+            celda.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
 
-        header_font = Font(name="Arial", size=12, bold=True, color="FFFFFF")
-        header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+    if ws.max_column >= 9:
+        for celda in ws["I"]:
+            celda.font = Font(name="Arial", size=12, color="FF0000", bold=True)
+            celda.alignment = Alignment(horizontal="center", vertical="center")
 
-        for col in range(1, ws.max_column + 1):
-            cell = ws.cell(row=1, column=col)
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = Alignment(wrap_text=True, horizontal="center", vertical="center")
+    header_font = Font(name="Arial", size=12, bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
 
-        thin_border = Border(
-            left=Side(style="thin"),
-            right=Side(style="thin"),
-            top=Side(style="thin"),
-            bottom=Side(style="thin")
-        )
+    for col in range(1, ws.max_column + 1):
+        cell = ws.cell(row=1, column=col)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(wrap_text=True, horizontal="center", vertical="center")
 
-        for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
-            for cell in row:
-                cell.border = thin_border
+    thin_border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin")
+    )
 
-        for col in ws.columns:
-            column = get_column_letter(col[0].column)
-            ws.column_dimensions[column].width = 20.71
+    for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
+        for cell in row:
+            cell.border = thin_border
 
-        if ws.max_column >= 7:
-            ws.column_dimensions["G"].width = 30.71
-        if ws.max_column >= 9:
-            ws.column_dimensions["I"].width = 30.71
+    for col in ws.columns:
+        column = get_column_letter(col[0].column)
+        ws.column_dimensions[column].width = 20.71
 
-        for row in ws.iter_rows():
-            celda = row[0]
-            ws.row_dimensions[celda.row].height = 150.04
+    if ws.max_column >= 7:
+        ws.column_dimensions["G"].width = 30.71
+    if ws.max_column >= 9:
+        ws.column_dimensions["I"].width = 30.71
 
-        ultima_fila = ws.max_row
-        ultima_col = ws.max_column
-        rango_tabla = f"A1:{get_column_letter(ultima_col)}{ultima_fila}"
+    for row in ws.iter_rows():
+        celda = row[0]
+        ws.row_dimensions[celda.row].height = 150.04
 
-        body_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+    ultima_fila = ws.max_row
+    ultima_col = ws.max_column
+    rango_tabla = f"A1:{get_column_letter(ultima_col)}{ultima_fila}"
 
-        for fila in ws[rango_tabla]:
-            for celda in fila:
-                if celda.value is None or celda.value == "":
-                    celda.fill = body_fill
+    body_fill = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 
-        tabla = Table(displayName="Exportados", ref=rango_tabla)
-        estilo = TableStyleInfo(
-            name="TableStyleMedium2",
-            showRowStripes=True,
-            showColumnStripes=False
-        )
-        tabla.tableStyleInfo = estilo
-        ws.add_table(tabla)
-        ws.sheet_view.zoomScale = 80
-        wb.save(ruta_excel)
+    for fila in ws[rango_tabla]:
+        for celda in fila:
+            if celda.value is None or celda.value == "":
+                celda.fill = body_fill
 
-        print(Fore.GREEN + f"\n\nExportación completada correctamente: {len(registros)} registros.")
-        input("\nPresione ENTER para abrir la carpeta.")
-        os.system("cls")
-        os.startfile(carpeta_base)
-    else:
-        print(Fore.RED + "\n\nNo se encontraron correos en el rango especificado.")
-        input("\nPresione ENTER para continuar.")
-        os.system("cls")
+    tabla = Table(displayName="Exportados", ref=rango_tabla)
+    estilo = TableStyleInfo(
+        name="TableStyleMedium2",
+        showRowStripes=True,
+        showColumnStripes=False
+    )
+    tabla.tableStyleInfo = estilo
+    ws.add_table(tabla)
+    ws.sheet_view.zoomScale = 80
+    wb.save(ruta_excel)
+
+    return ruta_excel
 
 
 def obtener_anexos(anexos, carpeta_correo):
@@ -475,58 +464,30 @@ def obtener_anexos(anexos, carpeta_correo):
 
 
 # ============================================================
-# Entrada de usuario
+# Fechas y configuración de Outlook
 # ============================================================
 
-def pedir_fecha():
-    while True:
-        try:
-            dia = input("Día (1-31): ")
-            mes = input("Mes (1-12): ")
-            anio = input("Año (4 dígitos): ")
-
-            fecha_inicio_raw = datetime(int(anio), int(mes), int(dia), 0, 0, 0)
-            fecha_fin_raw = fecha_inicio_raw + timedelta(days=1)
-            fecha_inicio_str = fecha_inicio_raw.strftime("%Y-%m-%d")
-
-            meses = {
-                1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril",
-                5: "Mayo", 6: "Junio", 7: "Julio", 8: "Agosto",
-                9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"
-            }
-
-            mes_name = meses[int(mes)]
-
-            return fecha_inicio_raw, fecha_fin_raw, fecha_inicio_str, mes_name, anio
-
-        except ValueError:
-            print(Fore.RED + "\nFecha inválida. Intente nuevamente.\n")
+def obtener_rango_dia(dia, mes, anio):
+    fecha_inicio = datetime(int(anio), int(mes), int(dia), 0, 0, 0)
+    fecha_fin = fecha_inicio + timedelta(days=1)
+    etiqueta = fecha_inicio.strftime("%Y-%m-%d")
+    return fecha_inicio, fecha_fin, etiqueta, MESES[int(mes)], str(anio)
 
 
-def pedir_tipo_exportacion():
-    while True:
-        print("¿Qué desea exportar?")
-        print("1. Correos recibidos")
-        print("2. Correos enviados")
+def obtener_rango_mes(mes, anio):
+    mes = int(mes)
+    anio = int(anio)
+    ultimo_dia = monthrange(anio, mes)[1]
+    fecha_inicio = datetime(anio, mes, 1, 0, 0, 0)
+    fecha_fin = datetime(anio, mes, ultimo_dia, 0, 0, 0) + timedelta(days=1)
+    etiqueta = fecha_inicio.strftime("%Y-%m")
+    return fecha_inicio, fecha_fin, etiqueta, MESES[mes], str(anio)
 
-        opcion = input("\nSeleccione una opción (1 o 2): ").strip()
-
-        if opcion == "1":
-            return "recibidos"
-        if opcion == "2":
-            return "enviados"
-
-        print(Fore.RED + "\nOpción inválida. Escriba 1 o 2.\n")
-
-
-# ============================================================
-# Outlook y procesamiento
-# ============================================================
 
 def obtener_config_outlook(tipo_exportacion):
     if tipo_exportacion == "recibidos":
         return {
-            "folder_id": 6,  # Bandeja de entrada
+            "folder_id": 6,
             "campo_fecha": "ReceivedTime",
             "atributo_fecha": "ReceivedTime",
             "nombre_carpeta": "Correos Recibidos",
@@ -534,7 +495,7 @@ def obtener_config_outlook(tipo_exportacion):
         }
 
     return {
-        "folder_id": 5,  # Elementos enviados
+        "folder_id": 5,
         "campo_fecha": "SentOn",
         "atributo_fecha": "SentOn",
         "nombre_carpeta": "Correos Enviados",
@@ -544,15 +505,7 @@ def obtener_config_outlook(tipo_exportacion):
 
 def obtener_fecha_mail(mail, atributo_fecha):
     fecha = getattr(mail, atributo_fecha)
-
-    return datetime(
-        fecha.year,
-        fecha.month,
-        fecha.day,
-        fecha.hour,
-        fecha.minute,
-        fecha.second
-    )
+    return datetime(fecha.year, fecha.month, fecha.day, fecha.hour, fecha.minute, fecha.second)
 
 
 def obtener_nombre_para_carpeta(tipo_exportacion, remitente, destinatarios_raw):
@@ -564,6 +517,10 @@ def obtener_nombre_para_carpeta(tipo_exportacion, remitente, destinatarios_raw):
 
     return remitente or "Sin remitente"
 
+
+# ============================================================
+# Conversión correo a PDF / MSG
+# ============================================================
 
 def convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio):
     mht_path = carpeta_correo / f"{asunto_limpio}.mht"
@@ -592,38 +549,52 @@ def convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio):
         try:
             mail.SaveAs(str(msg_path), 3)
         except Exception as e:
-            print(Fore.RED + f"\nNo se pudo guardar el correo como PDF ni MSG: {e}")
+            raise RuntimeError(f"No se pudo guardar el correo como PDF ni MSG: {e}")
 
 
-def procesar():
-    global PERSONAS
+# ============================================================
+# Procesamiento backend
+# ============================================================
 
-    print("=== Exportador de Correos y Anexos ===", end="\n\n")
+def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fecha=None, progress_callback=None):
+    """
+    Procesa una exportación sin pedir datos por consola.
+
+    tipo_exportacion: "recibidos" o "enviados"
+    fecha_inicio: datetime inicial inclusivo
+    fecha_fin: datetime final exclusivo
+    etiqueta_fecha: texto para nombre de carpeta/Excel. Ej: 2026-05-08 o 2026-05
+    progress_callback: función opcional que recibe texto de progreso.
+    """
 
     init(autoreset=True)
+    inicializar_personas()
 
-    PERSONAS = cargar_personas()
-    if PERSONAS:
-        print(Fore.GREEN + f"Personas cargadas desde JSON: {len(PERSONAS)}\n")
+    if tipo_exportacion not in ["recibidos", "enviados"]:
+        raise ValueError("tipo_exportacion debe ser 'recibidos' o 'enviados'.")
 
-    tipo_exportacion = pedir_tipo_exportacion()
     config = obtener_config_outlook(tipo_exportacion)
-
-    f_inicio, f_fin, f_inicio_str, mes_name, anio = pedir_fecha()
+    etiqueta_fecha = etiqueta_fecha or fecha_inicio.strftime("%Y-%m-%d")
+    mes_name = MESES[fecha_inicio.month]
+    anio = str(fecha_inicio.year)
 
     carpeta_base = (
         Path.home()
         / "Downloads"
         / f"{config['nombre_carpeta']} {mes_name} - {anio}"
-        / f_inicio_str
+        / etiqueta_fecha
     )
 
-    outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
+    if progress_callback:
+        progress_callback("Conectando con Outlook...")
+
+    outlook_app = win32com.client.gencache.EnsureDispatch("Outlook.Application")
+    outlook = outlook_app.GetNamespace("MAPI")
     carpeta = outlook.GetDefaultFolder(config["folder_id"])
 
     filtro = (
-        f"[{config['campo_fecha']}] >= '{f_inicio.strftime('%d/%m/%Y %H:%M')}' "
-        f"AND [{config['campo_fecha']}] < '{f_fin.strftime('%d/%m/%Y %H:%M')}'"
+        f"[{config['campo_fecha']}] >= '{fecha_inicio.strftime('%d/%m/%Y %H:%M')}' "
+        f"AND [{config['campo_fecha']}] < '{fecha_fin.strftime('%d/%m/%Y %H:%M')}'"
     )
 
     items = carpeta.Items
@@ -635,15 +606,27 @@ def procesar():
     except Exception:
         total_filtrados = 0
 
-    word = win32com.client.Dispatch("Word.Application")
-    word.Visible = False
+    if total_filtrados == 0:
+        return ResultadoExportacion(
+            exito=False,
+            cantidad=0,
+            carpeta=carpeta_base,
+            excel=None,
+            mensaje="No se encontraron correos en el rango especificado."
+        )
 
-    if total_filtrados > 0:
-        print("\nProcesando", end="")
+    if progress_callback:
+        progress_callback(f"Se encontraron {total_filtrados} correos. Abriendo Word...")
+
+    word = win32com.client.gencache.EnsureDispatch("Word.Application")
+    word.Visible = False
+    try:
+        word.DisplayAlerts = 0
+    except Exception:
+        pass
 
     registros = []
-
-    time.sleep(0.5)
+    procesados = 0
 
     try:
         for mail in items_filtrados:
@@ -652,7 +635,7 @@ def procesar():
                     continue
 
                 fecha_py = obtener_fecha_mail(mail, config["atributo_fecha"])
-                if not (f_inicio <= fecha_py < f_fin):
+                if not (fecha_inicio <= fecha_py < fecha_fin):
                     continue
 
                 remitente = mail.SenderName or ""
@@ -664,7 +647,9 @@ def procesar():
                 if tipo_exportacion == "recibidos" and remitente in REMITENTES_OMITIDOS:
                     continue
 
-                print(".", end="", flush=True)
+                procesados += 1
+                if progress_callback:
+                    progress_callback(f"Procesando correo {procesados} de {total_filtrados}: {asunto[:80]}")
 
                 nombre_carpeta_base = obtener_nombre_para_carpeta(
                     tipo_exportacion,
@@ -686,18 +671,16 @@ def procesar():
 
                 os.makedirs(carpeta_correo, exist_ok=True)
 
-                asunto_limpio = limpiar_texto(asunto)
-                if not asunto_limpio:
-                    asunto_limpio = "Sin asunto"
-
+                asunto_limpio = limpiar_texto(asunto) or "Sin asunto"
                 convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio)
 
                 remitente_filtrado = nombres_conocidos_rem(remitente, fecha_py)
                 cargo, dependencia = obtener_info_remitente(remitente, fecha_py)
-                destinatarios_cortos = cut_nombres_destinatarios(destinatarios_raw)
-                destinatarios_final, cargos = obtener_info_destinatarios(destinatarios_cortos)
 
-                cc_filtrado = nombres_conocidos_cc(str(cc))
+                destinatarios_cortos = cut_nombres_destinatarios(destinatarios_raw)
+                destinatarios_final, cargos = obtener_info_destinatarios(destinatarios_cortos, fecha_py)
+
+                cc_filtrado = nombres_conocidos_cc(str(cc), fecha_py)
 
                 lista_anexos = obtener_anexos(anexos, carpeta_correo)
                 cant_anexos = len(lista_anexos)
@@ -722,7 +705,8 @@ def procesar():
                 })
 
             except Exception as e:
-                print(Fore.RED + f"\nError procesando correo: {e}")
+                if progress_callback:
+                    progress_callback(f"Error procesando un correo: {e}")
 
     finally:
         try:
@@ -730,7 +714,79 @@ def procesar():
         except Exception:
             pass
 
-    exportar_excel(registros, carpeta_base, f_inicio_str, tipo_exportacion)
+    if not registros:
+        return ResultadoExportacion(
+            exito=False,
+            cantidad=0,
+            carpeta=carpeta_base,
+            excel=None,
+            mensaje="No se encontraron correos válidos para exportar."
+        )
+
+    if progress_callback:
+        progress_callback("Creando archivo Excel...")
+
+    ruta_excel = exportar_excel(registros, carpeta_base, etiqueta_fecha, tipo_exportacion)
+
+    return ResultadoExportacion(
+        exito=True,
+        cantidad=len(registros),
+        carpeta=carpeta_base,
+        excel=ruta_excel,
+        mensaje=f"Exportación completada correctamente: {len(registros)} registros."
+    )
+
+
+# ============================================================
+# Modo consola básico, solo para compatibilidad/pruebas
+# ============================================================
+
+def pedir_fecha():
+    while True:
+        try:
+            dia = input("Día (1-31): ")
+            mes = input("Mes (1-12): ")
+            anio = input("Año (4 dígitos): ")
+            return obtener_rango_dia(dia, mes, anio)
+        except ValueError:
+            print(Fore.RED + "\nFecha inválida. Intente nuevamente.\n")
+
+
+def pedir_tipo_exportacion():
+    while True:
+        print("¿Qué desea exportar?")
+        print("1. Correos recibidos")
+        print("2. Correos enviados")
+
+        opcion = input("\nSeleccione una opción (1 o 2): ").strip()
+
+        if opcion == "1":
+            return "recibidos"
+        if opcion == "2":
+            return "enviados"
+
+        print(Fore.RED + "\nOpción inválida. Escriba 1 o 2.\n")
+
+
+def procesar():
+    print("=== Exportador de Correos y Anexos ===", end="\n\n")
+    tipo_exportacion = pedir_tipo_exportacion()
+    f_inicio, f_fin, etiqueta, _mes_name, _anio = pedir_fecha()
+
+    resultado = procesar_exportacion(
+        tipo_exportacion=tipo_exportacion,
+        fecha_inicio=f_inicio,
+        fecha_fin=f_fin,
+        etiqueta_fecha=etiqueta,
+        progress_callback=print
+    )
+
+    print("\n" + resultado.mensaje)
+    if resultado.exito and resultado.carpeta:
+        input("\nPresione ENTER para abrir la carpeta.")
+        os.startfile(resultado.carpeta)
+    else:
+        input("\nPresione ENTER para continuar.")
 
 
 if __name__ == "__main__":
