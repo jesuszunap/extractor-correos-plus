@@ -170,7 +170,37 @@ def cargar_personas():
 
 
 PERSONAS = []
+def fecha_en_vigencia(persona, fecha_correo):
+    """
+    Verifica si la fecha del correo cae dentro
+    de la vigencia del cargo.
+    """
 
+    desde = persona.get("vigente_desde")
+    hasta = persona.get("vigente_hasta")
+
+    try:
+
+        # Validar fecha inicio
+        if desde:
+            desde_dt = datetime.strptime(desde, "%Y-%m-%d")
+
+            if fecha_correo < desde_dt:
+                return False
+
+        # Validar fecha fin
+        if hasta:
+            hasta_dt = datetime.strptime(hasta, "%Y-%m-%d")
+
+            if fecha_correo > hasta_dt:
+                return False
+
+        return True
+
+    except Exception:
+        # Si hay error en formato de fecha,
+        # no bloquear el registro.
+        return True
 
 def puntuar_persona(persona, texto):
     texto_original = str(texto or "")
@@ -210,12 +240,23 @@ def puntuar_persona(persona, texto):
     return score
 
 
-def buscar_persona(texto, minimo=24):
+def buscar_persona(texto, fecha_correo=None, minimo=24):
     mejor = None
     mejor_score = 0
 
     for persona in PERSONAS:
+
+        # Si se proporcionó fecha del correo,
+        # validar vigencia histórica del cargo.
+        if fecha_correo:
+
+            # Si la fecha NO entra en vigencia,
+            # omitir este registro.
+            if not fecha_en_vigencia(persona, fecha_correo):
+                continue
+
         score = puntuar_persona(persona, texto)
+
         if score > mejor_score:
             mejor = persona
             mejor_score = score
@@ -261,11 +302,11 @@ def nombres_conocidos_cc(cc):
     return "\n".join(resultado)
 
 
-def nombres_conocidos_rem(rem):
+def nombres_conocidos_rem(rem, fecha_correo=None):
     if not rem:
         return ""
 
-    persona = buscar_persona(rem)
+    persona = buscar_persona(rem, fecha_correo)
     if persona:
         return formatear_persona(persona, usar_corto=False)
 
@@ -317,8 +358,8 @@ def obtener_info_destinatarios(lista_nombres):
     return ("\n\n".join(destinatarios)), ("\n\n".join([c for c in cargos if c]))
 
 
-def obtener_info_remitente(remitente):
-    persona = buscar_persona(remitente)
+def obtener_info_remitente(remitente, fecha_correo=None):
+    persona = buscar_persona(remitente, fecha_correo)
 
     if persona:
         return persona.get("cargo") or None, persona.get("dependencia") or None
@@ -651,9 +692,8 @@ def procesar():
 
                 convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio)
 
-                remitente_filtrado = nombres_conocidos_rem(remitente)
-                cargo, dependencia = obtener_info_remitente(remitente)
-
+                remitente_filtrado = nombres_conocidos_rem(remitente, fecha_py)
+                cargo, dependencia = obtener_info_remitente(remitente, fecha_py)
                 destinatarios_cortos = cut_nombres_destinatarios(destinatarios_raw)
                 destinatarios_final, cargos = obtener_info_destinatarios(destinatarios_cortos)
 

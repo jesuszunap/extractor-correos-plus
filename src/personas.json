@@ -5,7 +5,29 @@
     "total_desde_html_direccion_obras": 177,
     "total_desde_html_rectorado": 161,
     "total_agregados_desde_codigo_original": 5,
-    "nota": "activo=true/false viene del HTML. activo=null indica persona heredada del código original sin estado confirmado en los HTML. No se omitieron duplicados de los HTML."
+    "nota": "activo=true/false viene del HTML. activo=null indica persona heredada del código original sin estado confirmado en los HTML. No se omitieron duplicados de los HTML.",
+    "usa_vigencias": true,
+    "nota_vigencias": "Los campos vigente_desde y vigente_hasta permiten elegir el cargo correcto según la fecha del correo. Si ambos están en null, el registro se considera sin vigencia histórica definida.",
+    "cambios_vigencia_manual": [
+      {
+        "persona": "Belty Esperanza Espinoza Santos",
+        "cargo": "Directora de Infraestructura y Obras Universitarias (E)",
+        "vigente_desde": "2024-09-12",
+        "vigente_hasta": "2026-04-06"
+      },
+      {
+        "persona": "Belty Esperanza Espinoza Santos",
+        "cargo": "Analista de Mantenimiento de Infraestructura 3",
+        "vigente_desde": "2026-04-07",
+        "vigente_hasta": null
+      },
+      {
+        "persona": "Jessica Paulina Zambrano Pico",
+        "cargo": "Directora de Infraestructura y Obras Universitarias",
+        "vigente_desde": "2026-04-07",
+        "vigente_hasta": null
+      }
+    ]
   },
   "personas": [
     {
@@ -20,7 +42,9 @@
       "email": "ader.intriagoa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3849539",
@@ -34,7 +58,9 @@
       "email": "adriana.floresm@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2292858",
@@ -48,7 +74,9 @@
       "email": "alan.gutierrezf@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5340939",
@@ -62,7 +90,9 @@
       "email": "alex.alavar@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241715",
@@ -76,7 +106,9 @@
       "email": "alexander.rugely@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119506",
@@ -90,7 +122,9 @@
       "email": "alex.perezr@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2677645",
@@ -104,7 +138,9 @@
       "email": "alexis.valleb@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241693",
@@ -118,7 +154,9 @@
       "email": "alex.rangeld@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241793",
@@ -132,7 +170,9 @@
       "email": "alfredo.zambranosa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3569954",
@@ -146,7 +186,9 @@
       "email": "ana.apolinarioc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241732",
@@ -160,7 +202,9 @@
       "email": "angelica.silvas@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3569755",
@@ -174,7 +218,9 @@
       "email": "angelica.silvas@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241704",
@@ -188,7 +234,9 @@
       "email": "angel.riveram@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119778",
@@ -202,7 +250,9 @@
       "email": "azucena.baquerizos@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296603",
@@ -216,7 +266,9 @@
       "email": "azucena.baquerizos@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2287850",
@@ -230,7 +282,10 @@
       "email": "bety.espinozas@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": "2026-04-07",
+      "vigente_hasta": null,
+      "observacion_vigencia": "Cargo actual posterior a dejar Dirección."
     },
     {
       "registro_id": "4241228",
@@ -244,7 +299,10 @@
       "email": "espinozasb@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": "2024-09-12",
+      "vigente_hasta": "2026-04-06",
+      "observacion_vigencia": "Fecha de inicio aproximada indicada por usuario; terminó como directora el 2026-04-06."
     },
     {
       "registro_id": "6115480",
@@ -258,7 +316,9 @@
       "email": "espinozasb@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5302744",
@@ -272,7 +332,9 @@
       "email": "bethzaida.villamilg@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3107101",
@@ -286,7 +348,9 @@
       "email": "boris.izurietap@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5512188",
@@ -300,7 +364,9 @@
       "email": "bryan.aviless@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296353",
@@ -314,7 +380,9 @@
       "email": "byron.silvac@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241728",
@@ -328,7 +396,9 @@
       "email": "byron.silvac@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4975124",
@@ -342,7 +412,9 @@
       "email": "carlos.floresmo@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5121621",
@@ -356,7 +428,9 @@
       "email": "carlos.floresmo@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5143850",
@@ -370,7 +444,9 @@
       "email": "carlos.floresmo@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293834",
@@ -384,7 +460,9 @@
       "email": "carlos.machucaf@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5045308",
@@ -398,7 +476,9 @@
       "email": "carlos.villavicencioga@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293868",
@@ -412,7 +492,9 @@
       "email": "carlos.zambranoe@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5866038",
@@ -426,7 +508,9 @@
       "email": "cesar.garciapa@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296642",
@@ -440,7 +524,9 @@
       "email": "colon.ruizc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241588",
@@ -454,7 +540,9 @@
       "email": "christopher.ochoaji@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240691",
@@ -468,7 +556,9 @@
       "email": "daniel.avendanor@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296007",
@@ -482,7 +572,9 @@
       "email": "daniel.avendanor@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241190",
@@ -496,7 +588,9 @@
       "email": "david.escuderom@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119301",
@@ -510,7 +604,9 @@
       "email": "eddy.alfonsog@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241700",
@@ -524,7 +620,9 @@
       "email": "games.reyesz@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241334",
@@ -538,7 +636,9 @@
       "email": "eduardo.iturraldem@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2295967",
@@ -552,7 +652,9 @@
       "email": "eduardo.iturraldem@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241050",
@@ -566,7 +668,9 @@
       "email": "erick.chavezg@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4956808",
@@ -580,7 +684,9 @@
       "email": "evelyn.herediaa@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6558376",
@@ -594,7 +700,9 @@
       "email": "evelyn.caicedor@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4966744",
@@ -608,7 +716,9 @@
       "email": "fabricio.baques@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240707",
@@ -622,7 +732,9 @@
       "email": "fabricio.baques@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5045096",
@@ -636,7 +748,9 @@
       "email": "fausto.cabreramo@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4966743",
@@ -650,7 +764,9 @@
       "email": "fausto.yaguall@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293848",
@@ -664,7 +780,9 @@
       "email": "fernando.mantillag@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293811",
@@ -678,7 +796,9 @@
       "email": "francisco.casanovas@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241433",
@@ -692,7 +812,9 @@
       "email": "franklin.medinag@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3615939",
@@ -706,7 +828,9 @@
       "email": "franklin.medinag@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240656",
@@ -720,7 +844,9 @@
       "email": "freddy.arevalom@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5865989",
@@ -734,7 +860,9 @@
       "email": "george.verdugas@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5477428",
@@ -748,7 +876,9 @@
       "email": "geovanny.almeidaa@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4650342",
@@ -762,7 +892,9 @@
       "email": "geovanny.almeidaa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2294084",
@@ -776,7 +908,9 @@
       "email": "suarezcg@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241734",
@@ -790,7 +924,9 @@
       "email": "suarezcg@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4546673",
@@ -804,7 +940,9 @@
       "email": "gustavo.ayalam@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5823920",
@@ -818,7 +956,9 @@
       "email": "hector.hugou@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4260195",
@@ -832,7 +972,9 @@
       "email": "henry.reyesa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241684",
@@ -846,7 +988,9 @@
       "email": "henry.quijijet@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3569745",
@@ -860,7 +1004,9 @@
       "email": "huber.morenog@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241472",
@@ -874,7 +1020,9 @@
       "email": "huber.morenom@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5475590",
@@ -888,7 +1036,9 @@
       "email": "hugo.carrascof@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5768055",
@@ -902,7 +1052,9 @@
       "email": "humberto.rodriguezg@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241742",
@@ -916,7 +1068,9 @@
       "email": "isidro.vargasp@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5729862",
@@ -930,7 +1084,9 @@
       "email": "jaime.francob@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5875947",
@@ -944,7 +1100,9 @@
       "email": "jairo.loors@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2294121",
@@ -958,7 +1116,9 @@
       "email": "jennifer.espinozal@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7151921",
@@ -972,7 +1132,10 @@
       "email": "jessica.zambranop@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": "2026-04-07",
+      "vigente_hasta": null,
+      "observacion_vigencia": "Nueva directora desde el 2026-04-07 según indicación del usuario."
     },
     {
       "registro_id": "4119485",
@@ -986,7 +1149,9 @@
       "email": "jesus.moreno@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6660244",
@@ -1000,7 +1165,9 @@
       "email": "jhon.araujob@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241010",
@@ -1014,7 +1181,9 @@
       "email": "jhonther.cardenasa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241724",
@@ -1028,7 +1197,9 @@
       "email": "joel.salazarl@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119373",
@@ -1042,7 +1213,9 @@
       "email": "joffre.ochoam@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293858",
@@ -1056,7 +1229,9 @@
       "email": "johanna.saltosh@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119336",
@@ -1070,7 +1245,9 @@
       "email": "jonathan.baronam@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3490422",
@@ -1084,7 +1261,9 @@
       "email": "jonathan.cabezasb@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6678912",
@@ -1098,7 +1277,9 @@
       "email": "jorge.maldonadog@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119540",
@@ -1112,7 +1293,9 @@
       "email": "jorge.ramirezb@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241299",
@@ -1126,7 +1309,9 @@
       "email": "jorge.guerrerob@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2734604",
@@ -1140,7 +1325,9 @@
       "email": "jorge.duenasj@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2723833",
@@ -1154,7 +1341,9 @@
       "email": "jorge.duenasj@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241451",
@@ -1168,7 +1357,9 @@
       "email": "jorge.morans@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2615922",
@@ -1182,7 +1373,9 @@
       "email": "jorge.tohaquizaj@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293792",
@@ -1196,7 +1389,9 @@
       "email": "jorge.tohaquizaja@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3107094",
@@ -1210,7 +1405,9 @@
       "email": "jose.acostam@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241373",
@@ -1224,7 +1421,9 @@
       "email": "jose.lucasch@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119597",
@@ -1238,7 +1437,9 @@
       "email": "jose.zunigal@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6660317",
@@ -1252,7 +1453,9 @@
       "email": "jose.rodriguezmo@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3107098",
@@ -1266,7 +1469,9 @@
       "email": "jose.bonifazf@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241710",
@@ -1280,7 +1485,9 @@
       "email": "juan.riveram@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2295982",
@@ -1294,7 +1501,9 @@
       "email": "juan.romeroan@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241106",
@@ -1308,7 +1517,9 @@
       "email": "juan.coroneli@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240561",
@@ -1322,7 +1533,9 @@
       "email": "juan.aguagalloc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241658",
@@ -1336,7 +1549,9 @@
       "email": "juan.pazmino@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2294101",
@@ -1350,7 +1565,9 @@
       "email": "katiuska.litumav@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5128749",
@@ -1364,7 +1581,9 @@
       "email": "katy.vargasa@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4798196",
@@ -1378,7 +1597,9 @@
       "email": "kerly.trivinoc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296580",
@@ -1392,7 +1613,9 @@
       "email": "kleber.suarezm@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3490137",
@@ -1406,7 +1629,9 @@
       "email": "larry.campoverdea@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5875940",
@@ -1420,7 +1645,9 @@
       "email": "lesly.gonzalezb@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5875963",
@@ -1434,7 +1661,9 @@
       "email": "lissette.morenob@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296588",
@@ -1448,7 +1677,9 @@
       "email": "luis.gonzaleza@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5371849",
@@ -1462,7 +1693,9 @@
       "email": "luis.vascod@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6054837",
@@ -1476,7 +1709,9 @@
       "email": "luis.vargasor@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2295974",
@@ -1490,7 +1725,9 @@
       "email": "luisa.ramosd@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119570",
@@ -1504,7 +1741,9 @@
       "email": "luisa.ramosd@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4546687",
@@ -1518,7 +1757,9 @@
       "email": "luis.landivara@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4546664",
@@ -1532,7 +1773,9 @@
       "email": "luis.ycazacordova@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296599",
@@ -1546,7 +1789,9 @@
       "email": "luis.hidalgoca@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241317",
@@ -1560,7 +1805,9 @@
       "email": "manuel.hernandezca@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296619",
@@ -1574,7 +1821,9 @@
       "email": "marcia.velascoc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119781",
@@ -1588,7 +1837,9 @@
       "email": "marcia.velascoc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3367936",
@@ -1602,7 +1853,9 @@
       "email": "marcos.montenegrot@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5001855",
@@ -1616,7 +1869,9 @@
       "email": "marcos.echeverriag@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296025",
@@ -1630,7 +1885,9 @@
       "email": "marco.vargasm@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241740",
@@ -1644,7 +1901,9 @@
       "email": "marco.vargasm@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241132",
@@ -1658,7 +1917,9 @@
       "email": "maria.cruzd@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5913192",
@@ -1672,7 +1933,9 @@
       "email": "maria.falquezf@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240773",
@@ -1686,7 +1949,9 @@
       "email": "maria.bautistaq@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296363",
@@ -1700,7 +1965,9 @@
       "email": "maria.bautistaq@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119594",
@@ -1714,7 +1981,9 @@
       "email": "maria.zalameag@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7060754",
@@ -1728,7 +1997,9 @@
       "email": "maria.zalameag@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4650292",
@@ -1742,7 +2013,9 @@
       "email": "maria.galvezsu@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5426559",
@@ -1756,7 +2029,9 @@
       "email": "maria.galvezsu@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5381620",
@@ -1770,7 +2045,9 @@
       "email": "maria.galvezsu@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3683164",
@@ -1784,7 +2061,9 @@
       "email": "maria.marroquinm@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241738",
@@ -1798,7 +2077,9 @@
       "email": "maria.suarezr@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4948336",
@@ -1812,7 +2093,9 @@
       "email": "maria.villamarinb@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293797",
@@ -1826,7 +2109,9 @@
       "email": "maria.apolom@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2424666",
@@ -1840,7 +2125,9 @@
       "email": "maria.apolom@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296049",
@@ -1854,7 +2141,9 @@
       "email": "rodriguezom@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2295943",
@@ -1868,7 +2157,9 @@
       "email": "bustamanteam@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240992",
@@ -1882,7 +2173,9 @@
       "email": "bustamanteam@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241666",
@@ -1896,7 +2189,9 @@
       "email": "mario.pazminoca@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5214949",
@@ -1910,7 +2205,9 @@
       "email": "mario.merao@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5356440",
@@ -1924,7 +2221,9 @@
       "email": "mauro.basantesn@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240732",
@@ -1938,7 +2237,9 @@
       "email": "mauro.basantesn@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296335",
@@ -1952,7 +2253,9 @@
       "email": "mauro.basantesn@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5368708",
@@ -1966,7 +2269,9 @@
       "email": "mauro.basantesv@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241790",
@@ -1980,7 +2285,9 @@
       "email": "melecio.viteriz@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5368668",
@@ -1994,7 +2301,9 @@
       "email": "miguel.florespo@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5340943",
@@ -2008,7 +2317,9 @@
       "email": "miguel.contrerasg@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241739",
@@ -2022,7 +2333,9 @@
       "email": "milton.tumbacog@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119264",
@@ -2036,7 +2349,9 @@
       "email": "munozfn@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2295957",
@@ -2050,7 +2365,9 @@
       "email": "munozfn@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5276455",
@@ -2064,7 +2381,9 @@
       "email": "pablo.morillov@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241068",
@@ -2078,7 +2397,9 @@
       "email": "pastor.chonilloc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119422",
@@ -2092,7 +2413,9 @@
       "email": "patricia.fuentesmor@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241645",
@@ -2106,7 +2429,9 @@
       "email": "pedro.ortizq@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241671",
@@ -2120,7 +2445,9 @@
       "email": "rafael.pitare@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119777",
@@ -2134,7 +2461,9 @@
       "email": "raquel.dazzav@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241680",
@@ -2148,7 +2477,9 @@
       "email": "ricardo.pradosa@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5796938",
@@ -2162,7 +2493,9 @@
       "email": "ricardo.valverdep@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5086363",
@@ -2176,7 +2509,9 @@
       "email": "roberto.vivancoc@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3556341",
@@ -2190,7 +2525,9 @@
       "email": "rosa.plazaa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241019",
@@ -2204,7 +2541,9 @@
       "email": "ruben.cusmep@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241792",
@@ -2218,7 +2557,9 @@
       "email": "sailer.yavarm@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4699317",
@@ -2232,7 +2573,9 @@
       "email": "sally.ramosm@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5174117",
@@ -2246,7 +2589,9 @@
       "email": "sally.ramosm@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4650321",
@@ -2260,7 +2605,9 @@
       "email": "saul.perezm@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4172062",
@@ -2274,7 +2621,9 @@
       "email": "saul.perezm@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241718",
@@ -2288,7 +2637,9 @@
       "email": "segundo.roblesc@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241390",
@@ -2302,7 +2653,9 @@
       "email": "segundo.martinezm@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241254",
@@ -2316,7 +2669,9 @@
       "email": "silvia.ganchozos@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119857",
@@ -2330,7 +2685,9 @@
       "email": "silvia.ganchozos@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293828",
@@ -2344,7 +2701,9 @@
       "email": "susana.lopezr@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4966742",
@@ -2358,7 +2717,9 @@
       "email": "tito.rodrigueza@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241160",
@@ -2372,7 +2733,9 @@
       "email": "tomas.escalonav@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241745",
@@ -2386,7 +2749,9 @@
       "email": "veronica.velezv@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296302",
@@ -2400,7 +2765,9 @@
       "email": "victor.velascom@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119559",
@@ -2414,7 +2781,9 @@
       "email": "victor.velascom@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5865963",
@@ -2428,7 +2797,9 @@
       "email": "victor.palaciosz@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6169286",
@@ -2442,7 +2813,9 @@
       "email": "victor.palaciosz@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4241722",
@@ -2456,7 +2829,9 @@
       "email": "vidal.salazar@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296124",
@@ -2470,7 +2845,9 @@
       "email": "walter.jurador@ug.edu.ec",
       "activo": false,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4240636",
@@ -2484,7 +2861,9 @@
       "email": "willinton.alvaradoa@ug.edu.ec",
       "activo": true,
       "area_base": "Dirección de Obras",
-      "fuente": "html_direccion_obras"
+      "fuente": "html_direccion_obras",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4331586",
@@ -2498,7 +2877,9 @@
       "email": "alejandra.castanedat@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5339013",
@@ -2512,7 +2893,9 @@
       "email": "alexandra.albanc@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300992",
@@ -2526,7 +2909,9 @@
       "email": "alfredo.goveama@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2354909",
@@ -2540,7 +2925,9 @@
       "email": "andrea.navarretev@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2723360",
@@ -2554,7 +2941,9 @@
       "email": "andrea.apariciop@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300431",
@@ -2568,7 +2957,9 @@
       "email": "andres.salameb@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4952187",
@@ -2582,7 +2973,9 @@
       "email": "angelica.gomeza@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302647",
@@ -2596,7 +2989,9 @@
       "email": "iglesiasma@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300869",
@@ -2610,7 +3005,9 @@
       "email": "annabell.fernandezm@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300445",
@@ -2624,7 +3021,9 @@
       "email": "cecilia.haroj@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5371822",
@@ -2638,7 +3037,9 @@
       "email": "betty.macasp@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300467",
@@ -2652,7 +3053,9 @@
       "email": "carla.lozanoc@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5910252",
@@ -2666,7 +3069,9 @@
       "email": "carlos.ortizch@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300488",
@@ -2680,7 +3085,9 @@
       "email": "carlos.tapiave@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302658",
@@ -2694,7 +3101,9 @@
       "email": "carlos.torresca@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2359408",
@@ -2708,7 +3117,9 @@
       "email": "carolina.penafielo@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4038545",
@@ -2722,7 +3133,9 @@
       "email": "cecilia.lozanoz@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301030",
@@ -2736,7 +3149,9 @@
       "email": "cecilia.lozanoz@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2296842",
@@ -2750,7 +3165,9 @@
       "email": "cecilia.maciass@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4156571",
@@ -2764,7 +3181,9 @@
       "email": "cesar.neirag@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2688289",
@@ -2778,7 +3197,9 @@
       "email": "cesar.neirag@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301039",
@@ -2792,7 +3213,9 @@
       "email": "cesar.munozi@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4585399",
@@ -2806,7 +3229,9 @@
       "email": "danny.aguillona@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300539",
@@ -2820,7 +3245,9 @@
       "email": "deida.raffov@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2777758",
@@ -2834,7 +3261,9 @@
       "email": "ricardo.verab@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302689",
@@ -2848,7 +3277,9 @@
       "email": "edmundo.verab@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2782616",
@@ -2862,7 +3293,9 @@
       "email": "eloiza.araquei@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5198875",
@@ -2876,7 +3309,9 @@
       "email": "elsa.changp@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302696",
@@ -2890,7 +3325,9 @@
       "email": "ernesto.luzardoa@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300880",
@@ -2904,7 +3341,9 @@
       "email": "endericaae@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300890",
@@ -2918,7 +3357,9 @@
       "email": "felipe.minar@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4325591",
@@ -2932,7 +3373,9 @@
       "email": "fernando.espinozaf@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4368372",
@@ -2946,7 +3389,9 @@
       "email": "jorge.moranp@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4616090",
@@ -2960,7 +3405,9 @@
       "email": "lenin.moranp@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3375450",
@@ -2974,7 +3421,9 @@
       "email": "francisco.eduartef@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6146653",
@@ -2988,7 +3437,9 @@
       "email": "gabriela.solisf@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4331625",
@@ -3002,7 +3453,9 @@
       "email": "gabriela.bustamantet@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2878049",
@@ -3016,7 +3469,9 @@
       "email": "ugrector@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6006201",
@@ -3030,7 +3485,9 @@
       "email": "gilberto.castroa@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3398689",
@@ -3044,7 +3501,9 @@
       "email": "gulnara.borjac@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4271660",
@@ -3058,7 +3517,9 @@
       "email": "gulnara.borjac@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4278905",
@@ -3072,7 +3533,9 @@
       "email": "gulnara.borjac@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4278911",
@@ -3086,7 +3549,9 @@
       "email": "gulnara.borjac@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4277170",
@@ -3100,7 +3565,9 @@
       "email": "gulnara.borjac@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2342056",
@@ -3114,7 +3581,9 @@
       "email": "ugrector@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301119",
@@ -3128,7 +3597,9 @@
       "email": "idalmys.garciar@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301131",
@@ -3142,7 +3613,9 @@
       "email": "isidro.luquec@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302887",
@@ -3156,7 +3629,9 @@
       "email": "drivanzambrano@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301070",
@@ -3170,7 +3645,9 @@
       "email": "jacqueline.velasteguie@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300643",
@@ -3184,7 +3661,9 @@
       "email": "janeth.zavalaf@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300659",
@@ -3198,7 +3677,9 @@
       "email": "janina.verdosotom@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4954511",
@@ -3212,7 +3693,9 @@
       "email": "jean.benitesm@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3377577",
@@ -3226,7 +3709,9 @@
       "email": "jhoanna.maciasmu@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3375474",
@@ -3240,7 +3725,9 @@
       "email": "joffre.santamariay@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5730293",
@@ -3254,7 +3741,9 @@
       "email": "jorge.carrillos@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301144",
@@ -3268,7 +3757,9 @@
       "email": "jose.riverava@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2570802",
@@ -3282,7 +3773,9 @@
       "email": "feocorreo@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4587563",
@@ -3296,7 +3789,9 @@
       "email": "josefernando.moranz@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300942",
@@ -3310,7 +3805,9 @@
       "email": "juan.estevesp@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4666942",
@@ -3324,7 +3821,9 @@
       "email": "jussara.cucalonb@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4739280",
@@ -3338,7 +3837,9 @@
       "email": "karen.guerreroa@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4119628",
@@ -3352,7 +3853,9 @@
       "email": "karin.moralesl@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3570588",
@@ -3366,7 +3869,9 @@
       "email": "karla.celic@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2356592",
@@ -3380,7 +3885,9 @@
       "email": "karla.gonzalezv@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2812125",
@@ -3394,7 +3901,9 @@
       "email": "katya.faggionic@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4294356",
@@ -3408,7 +3917,9 @@
       "email": "klever.loorv@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2791927",
@@ -3422,7 +3933,9 @@
       "email": "laura.corderop@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3553696",
@@ -3436,7 +3949,9 @@
       "email": "luis.alulimaq@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300709",
@@ -3450,7 +3965,9 @@
       "email": "luis.plazav@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4973288",
@@ -3464,7 +3981,9 @@
       "email": "luis.carreran@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4045033",
@@ -3478,7 +3997,9 @@
       "email": "lupita.francos@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300952",
@@ -3492,7 +4013,9 @@
       "email": "andradedm@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4294383",
@@ -3506,7 +4029,9 @@
       "email": "maria.morenocam@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2354217",
@@ -3520,7 +4045,9 @@
       "email": "maria.carrascob@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2570800",
@@ -3534,7 +4061,9 @@
       "email": "maria.quinder@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300730",
@@ -3548,7 +4077,9 @@
       "email": "lourdes.molinaj@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2713673",
@@ -3562,7 +4093,9 @@
       "email": "maria.tobarh@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2285960",
@@ -3576,7 +4109,9 @@
       "email": "fernanda.raffop@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4494587",
@@ -3590,7 +4125,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5229257",
@@ -3604,7 +4141,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5254048",
@@ -3618,7 +4157,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4498466",
@@ -3632,7 +4173,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4899675",
@@ -3646,7 +4189,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4818711",
@@ -3660,7 +4205,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5254134",
@@ -3674,7 +4221,9 @@
       "email": "maria.bustamantech@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2293379",
@@ -3688,7 +4237,9 @@
       "email": "mariana.alvaradom@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302837",
@@ -3702,7 +4253,9 @@
       "email": "varasgm@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300778",
@@ -3716,7 +4269,9 @@
       "email": "maria.velasquezd@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4069104",
@@ -3730,7 +4285,9 @@
       "email": "mauricio.munozla@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4801724",
@@ -3744,7 +4301,9 @@
       "email": "miguel.mendozas@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302895",
@@ -3758,7 +4317,9 @@
       "email": "nathaly.marzop@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2713530",
@@ -3772,7 +4333,9 @@
       "email": "noemi.morenoga@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6083136",
@@ -3786,7 +4349,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5669861",
@@ -3800,7 +4365,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5670082",
@@ -3814,7 +4381,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5803924",
@@ -3828,7 +4397,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6168528",
@@ -3842,7 +4413,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5669859",
@@ -3856,7 +4429,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5669854",
@@ -3870,7 +4445,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5738284",
@@ -3884,7 +4461,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6052424",
@@ -3898,7 +4477,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5896012",
@@ -3912,7 +4493,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6239104",
@@ -3926,7 +4509,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6384796",
@@ -3940,7 +4525,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6378885",
@@ -3954,7 +4541,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6384797",
@@ -3968,7 +4557,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6384952",
@@ -3982,7 +4573,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6512819",
@@ -3996,7 +4589,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6291044",
@@ -4010,7 +4605,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6598096",
@@ -4024,7 +4621,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6598120",
@@ -4038,7 +4637,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6805999",
@@ -4052,7 +4653,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6813502",
@@ -4066,7 +4669,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7112832",
@@ -4080,7 +4685,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7054782",
@@ -4094,7 +4701,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7119362",
@@ -4108,7 +4717,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7126598",
@@ -4122,7 +4733,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6826932",
@@ -4136,7 +4749,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7129104",
@@ -4150,7 +4765,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6842029",
@@ -4164,7 +4781,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6969940",
@@ -4178,7 +4797,9 @@
       "email": "oswaldo.baquej@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302978",
@@ -4192,7 +4813,9 @@
       "email": "otto.villapradoch@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2813302",
@@ -4206,7 +4829,9 @@
       "email": "otto.villapradoch@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5750806",
@@ -4220,7 +4845,9 @@
       "email": "pablo.tejadah@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4439801",
@@ -4234,7 +4861,9 @@
       "email": "patricia.ortegara@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2300965",
@@ -4248,7 +4877,9 @@
       "email": "rafael.candellb@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4301470",
@@ -4262,7 +4893,9 @@
       "email": "roberto.passailaigueb@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5483306",
@@ -4276,7 +4909,9 @@
       "email": "roger.campoverdeb@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5412851",
@@ -4290,7 +4925,9 @@
       "email": "rommel.salazarc@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2302852",
@@ -4304,7 +4941,9 @@
       "email": "rosa.santosf@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2301106",
@@ -4318,7 +4957,9 @@
       "email": "silvia.coronador@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4294285",
@@ -4332,7 +4973,9 @@
       "email": "silvia.arellanob@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6052423",
@@ -4346,7 +4989,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5669804",
@@ -4360,7 +5005,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5895998",
@@ -4374,7 +5021,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7118468",
@@ -4388,7 +5037,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6804841",
@@ -4402,7 +5053,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6512818",
@@ -4416,7 +5069,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7126576",
@@ -4430,7 +5085,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5268165",
@@ -4444,7 +5101,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7112312",
@@ -4458,7 +5117,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5670072",
@@ -4472,7 +5133,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6813494",
@@ -4486,7 +5149,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7054779",
@@ -4500,7 +5165,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6378809",
@@ -4514,7 +5181,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "7129068",
@@ -4528,7 +5197,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6252968",
@@ -4542,7 +5213,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6804840",
@@ -4556,7 +5229,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6239103",
@@ -4570,7 +5245,9 @@
       "email": "sofia.lovatot@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2342067",
@@ -4584,7 +5261,9 @@
       "email": "sonia.ordonezd@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2494819",
@@ -4598,7 +5277,9 @@
       "email": "sonia.ordonezd@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2857477",
@@ -4612,7 +5293,9 @@
       "email": "sonia.ordonezd@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2717444",
@@ -4626,7 +5309,9 @@
       "email": "sonia.ordonezd@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5371594",
@@ -4640,7 +5325,9 @@
       "email": "sonia.granjab@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2838672",
@@ -4654,7 +5341,9 @@
       "email": "soraya.aristegam@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "4307638",
@@ -4668,7 +5357,9 @@
       "email": "tito.quinteroj@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6553050",
@@ -4682,7 +5373,9 @@
       "email": "victor.llamucat@ug.edu.ec",
       "activo": true,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "3060654",
@@ -4696,7 +5389,9 @@
       "email": "virginia.marrerol@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "5301970",
@@ -4710,7 +5405,9 @@
       "email": "walter.caicedol@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "2782639",
@@ -4724,7 +5421,9 @@
       "email": "washington.utrerasm@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "6660262",
@@ -4738,7 +5437,9 @@
       "email": "whitney.echaniquer@ug.edu.ec",
       "activo": false,
       "area_base": "Rectorado",
-      "fuente": "html_rectorado"
+      "fuente": "html_rectorado",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "legacy_1",
@@ -4752,7 +5453,9 @@
       "email": "",
       "activo": null,
       "area_base": "Legacy código original",
-      "fuente": "codigo_original"
+      "fuente": "codigo_original",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "legacy_2",
@@ -4766,7 +5469,9 @@
       "email": "",
       "activo": null,
       "area_base": "Legacy código original",
-      "fuente": "codigo_original"
+      "fuente": "codigo_original",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "legacy_3",
@@ -4780,7 +5485,9 @@
       "email": "",
       "activo": null,
       "area_base": "Legacy código original",
-      "fuente": "codigo_original"
+      "fuente": "codigo_original",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "legacy_4",
@@ -4794,7 +5501,9 @@
       "email": "",
       "activo": null,
       "area_base": "Legacy código original",
-      "fuente": "codigo_original"
+      "fuente": "codigo_original",
+      "vigente_desde": null,
+      "vigente_hasta": null
     },
     {
       "registro_id": "legacy_5",
@@ -4808,7 +5517,9 @@
       "email": "",
       "activo": null,
       "area_base": "Legacy código original",
-      "fuente": "codigo_original"
+      "fuente": "codigo_original",
+      "vigente_desde": null,
+      "vigente_hasta": null
     }
   ]
 }
