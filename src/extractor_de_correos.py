@@ -96,6 +96,21 @@ MESES = {
     12: "Diciembre",
 }
 
+MESES_ABREVIADOS = {
+    1: "Ene",
+    2: "Feb",
+    3: "Mar",
+    4: "Abr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Ago",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dic",
+}
+
 COM_HRESULTS_REINTENTABLES = {
     -2147418111,  # Call was rejected by callee.
     -2147417846,  # Application is busy.
@@ -165,6 +180,16 @@ def limpiar_texto(nombre):
         base = base[:70]
 
     return f"{base}{ext.lower()}"
+
+
+def limpiar_prefijos_asunto(asunto):
+    asunto = str(asunto or "").strip()
+    asunto = re.sub(r"^((re|rv)\s*:\s*)+", "", asunto, flags=re.IGNORECASE)
+    return asunto.strip()
+
+
+def prefijo_fecha_carpeta(fecha):
+    return f"{fecha.day} {MESES_ABREVIADOS.get(fecha.month, fecha.strftime('%b')[:3])}"
 
 
 def quitar_acentos(texto):
@@ -626,12 +651,27 @@ def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
     for row in ws.iter_rows():
         for celda in row:
             celda.font = Font(name="Arial", size=12)
-            celda.alignment = Alignment(wrap_text=True, horizontal="left", vertical="top")
+            celda.alignment = Alignment(wrap_text=True, horizontal="justify", vertical="top")
 
-    if ws.max_column >= 10:
-        for celda in ws["J"]:
+    encabezados = {
+        ws.cell(row=1, column=col).value: col
+        for col in range(1, ws.max_column + 1)
+    }
+
+    col_con_copia = encabezados.get("Con Copia")
+    col_observaciones = encabezados.get("Observaciones")
+
+    if col_observaciones:
+        letra_observaciones = get_column_letter(col_observaciones)
+        for celda in ws[letra_observaciones]:
             celda.font = Font(name="Arial", size=12, color="FF0000", bold=True)
-            celda.alignment = Alignment(horizontal="center", vertical="center")
+            celda.alignment = Alignment(wrap_text=True, horizontal="justify", vertical="top")
+
+    if col_con_copia:
+        for fila in range(2, ws.max_row + 1):
+            celda = ws.cell(row=fila, column=col_con_copia)
+            if str(celda.value or "").strip() == "-----":
+                celda.alignment = Alignment(wrap_text=True, horizontal="center", vertical="center")
 
     header_font = Font(name="Arial", size=12, bold=True, color="FFFFFF")
     header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
@@ -707,28 +747,63 @@ def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
     return ruta_excel
 
 
-def obtener_anexos(anexos, carpeta_correo):
+def guardar_anexo_con_descarga(mail, anexos, indice, ruta_anexo, nombre_archivo, progress_callback=None):
+    anexo = anexos.Item(indice)
+
+    ejecutar_com_con_reintentos(
+        lambda: anexo.SaveAsFile(str(ruta_anexo)),
+        f"Guardando anexo {nombre_archivo}",
+        intentos=5,
+        espera=2,
+        progress_callback=progress_callback
+    )
+
+    return True
+
+
+def obtener_anexos(mail, anexos, carpeta_correo, progress_callback=None):
     lista_anexos = []
+    anexos_fallidos = []
 
     cantidad_anexos = ejecutar_com_con_reintentos(
         lambda: anexos.Count,
-        "Leyendo anexos"
+        "Leyendo anexos",
+        intentos=6,
+        espera=3
     )
 
     if cantidad_anexos > 0:
-        for anexo in anexos:
-            nombre_archivo = limpiar_texto(anexo.FileName)
-            if "image" not in nombre_archivo.lower() and "outlook" not in nombre_archivo.lower():
-                carpeta_anexos = carpeta_correo / "Anexos"
-                os.makedirs(carpeta_anexos, exist_ok=True)
-                ruta_anexo = carpeta_anexos / nombre_archivo
-                ejecutar_com_con_reintentos(
-                    lambda: anexo.SaveAsFile(str(ruta_anexo)),
-                    "Guardando anexo"
+        for indice in range(1, cantidad_anexos + 1):
+            nombre_archivo = "Anexo sin nombre"
+            try:
+                anexo = anexos.Item(indice)
+                nombre_archivo = limpiar_texto(anexo.FileName)
+                if "image" not in nombre_archivo.lower() and "outlook" not in nombre_archivo.lower():
+                    carpeta_anexos = carpeta_correo / "Anexos"
+                    os.makedirs(carpeta_anexos, exist_ok=True)
+                    ruta_anexo = carpeta_anexos / nombre_archivo
+                    guardado = guardar_anexo_con_descarga(
+                        mail,
+                        anexos,
+                        indice,
+                        ruta_anexo,
+                        nombre_archivo,
+                        progress_callback=progress_callback
+                    )
+                    if guardado:
+                        lista_anexos.append(nombre_archivo)
+            except Exception:
+                anexos_fallidos.append(nombre_archivo)
+                logger.exception(
+                    "No se pudo guardar un anexo. Archivo=%s Carpeta correo=%s",
+                    nombre_archivo,
+                    carpeta_correo
                 )
-                lista_anexos.append(nombre_archivo)
 
-    return lista_anexos
+    carpeta_anexos = carpeta_correo / "Anexos"
+    limpiar_carpeta_si_vacia(carpeta_anexos)
+
+    return lista_anexos, anexos_fallidos
 
 
 # ============================================================
@@ -901,6 +976,8 @@ def convertir_correo_a_pdf(mail, word, carpeta_correo, asunto_limpio, progress_c
         ejecutar_com_con_reintentos(
             lambda: mail.SaveAs(str(mht_path), 10),
             "Guardando correo temporal",
+            intentos=8,
+            espera=4,
             progress_callback=progress_callback
         )
 
@@ -986,6 +1063,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
     etiqueta_fecha = etiqueta_fecha or fecha_inicio.strftime("%Y-%m-%d")
     mes_name = MESES[fecha_inicio.month]
     anio = str(fecha_inicio.year)
+    exportacion_mes_completo = (fecha_fin - fecha_inicio).days > 1
 
     carpeta_base = (
         Path.home()
@@ -1117,6 +1195,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                     "Leyendo asunto",
                     progress_callback=progress_callback
                 )
+                asunto = limpiar_prefijos_asunto(asunto)
                 destinatarios_raw = ejecutar_com_con_reintentos(
                     lambda: mail.To or "",
                     "Leyendo destinatarios",
@@ -1147,6 +1226,8 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                 )
 
                 id_correo = fecha_py.strftime("%H%M%S") + "_" + limpiar_acortar_remitentes(nombre_carpeta_base)
+                if exportacion_mes_completo:
+                    id_correo = f"{prefijo_fecha_carpeta(fecha_py)} {id_correo}"
                 carpeta_nombre = id_correo[:100]
 
                 carpeta_base.mkdir(parents=True, exist_ok=True)
@@ -1177,14 +1258,27 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
 
                 cc_filtrado = nombres_conocidos_cc(str(cc), fecha_py)
 
-                lista_anexos = obtener_anexos(anexos, carpeta_correo)
-                cant_anexos = len(lista_anexos)
-
-                observaciones = (
-                    "No contiene anexos"
-                    if cant_anexos == 0
-                    else f"Anexa {cant_anexos} documento(s)"
+                lista_anexos, anexos_fallidos = obtener_anexos(
+                    mail,
+                    anexos,
+                    carpeta_correo,
+                    progress_callback=progress_callback
                 )
+                cant_anexos = len(lista_anexos)
+                cant_anexos_fallidos = len(anexos_fallidos)
+
+                if cant_anexos == 0 and cant_anexos_fallidos == 0:
+                    observaciones = "No contiene anexos"
+                elif cant_anexos_fallidos == 0:
+                    observaciones = f"Anexa {cant_anexos} documento(s)"
+                else:
+                    nombres_fallidos = ", ".join(anexos_fallidos[:2])
+                    if cant_anexos_fallidos > 2:
+                        nombres_fallidos += ", ..."
+                    observaciones = (
+                        f"Anexa {cant_anexos} documento(s). "
+                        f"No se pudo descargar {cant_anexos_fallidos} anexo(s): {nombres_fallidos}."
+                    )
 
                 registros.append({
                     "Tipo del Documento": "CORREO INSTITUCIONAL",

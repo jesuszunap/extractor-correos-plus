@@ -28,7 +28,7 @@
         "vigente_hasta": null
       }
     ],
-    "ultima_actualizacion_manual": "2026-05-11 14:47:47"
+    "ultima_actualizacion_manual": "2026-05-08 14:17:38"
   },
   "personas": [
     {
@@ -295,7 +295,7 @@
       "nombre_busqueda": "belty esperanza espinoza santos",
       "titulo": "Señora Arquitecta",
       "titulo_abreviado": "Arq.",
-      "cargo": "Directora DIOU",
+      "cargo": "Directora",
       "dependencia": "Dirección De Infraestructuras y Obras Universitarias",
       "email": "espinozasb@ug.edu.ec",
       "activo": false,
