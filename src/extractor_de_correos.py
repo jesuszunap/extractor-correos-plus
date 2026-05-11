@@ -2,8 +2,14 @@ import os
 import re
 import json
 import time
+import logging
+import threading
 import unicodedata
 import win32com.client
+import pywintypes
+import win32con
+import win32gui
+import win32api
 import pandas as pd
 
 from datetime import datetime, timedelta
@@ -19,11 +25,23 @@ from colorama import init, Fore
 
 
 # ============================================================
-# Configuración general
+# ConfiguraciÃ³n general
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = BASE_DIR.parent
 PERSONAS_JSON = BASE_DIR / "personas.json"
+LOG_DIR = PROJECT_DIR / "logs"
+LOG_PATH = LOG_DIR / "extractor_correos.log"
+
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+logging.basicConfig(
+    filename=LOG_PATH,
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+    encoding="utf-8"
+)
+logger = logging.getLogger("extractor_correos")
 
 REMITENTES_OMITIDOS = [
     "QUIPUX",
@@ -53,18 +71,40 @@ MESES = {
     12: "Diciembre",
 }
 
+COM_HRESULTS_REINTENTABLES = {
+    -2147418111,  # Call was rejected by callee.
+    -2147417846,  # Application is busy.
+    -2147023174,  # RPC server unavailable.
+    -2146959355,  # Server execution failed.
+    -2147352567,  # Outlook exception, often "not connected".
+    -2079063787,  # OLE/MAPI transient error seen with Outlook/Word.
+}
+
 
 # ============================================================
-# Resultado de exportación
+# Resultado de exportaciÃ³n
 # ============================================================
 
 class ResultadoExportacion:
-    def __init__(self, exito=False, cantidad=0, carpeta=None, excel=None, mensaje=""):
+    def __init__(
+        self,
+        exito=False,
+        cantidad=0,
+        carpeta=None,
+        excel=None,
+        mensaje="",
+        total=0,
+        errores=0,
+        omitidos=0
+    ):
         self.exito = exito
         self.cantidad = cantidad
         self.carpeta = carpeta
         self.excel = excel
         self.mensaje = mensaje
+        self.total = total
+        self.errores = errores
+        self.omitidos = omitidos
 
 
 # ============================================================
@@ -75,7 +115,7 @@ def limpiar_acortar_remitentes(texto):
     if not texto:
         return ""
     texto = str(texto).strip()
-    texto = re.sub(r'[\\/:*?"<>|\r\n\t“”‘’´`]', "_", texto)
+    texto = re.sub(r'[\\/:*?"<>|\r\n\tâ€œâ€â€˜â€™Â´`]', "_", texto)
     texto = re.sub(r'\s+', " ", texto).strip()
     if len(texto) > 45:
         texto = texto[:45]
@@ -93,7 +133,7 @@ def limpiar_texto(nombre):
     else:
         base, ext = nombre, ""
 
-    base = re.sub(r'[\\/:*?"<>|\r\n\t“”‘’´`]', "_", base)
+    base = re.sub(r'[\\/:*?"<>|\r\n\tâ€œâ€â€˜â€™Â´`]', "_", base)
     base = re.sub(r'\s+', " ", base).strip()
 
     if len(base) > 70:
@@ -139,6 +179,201 @@ def normalizar_email(email):
     return str(email).strip().replace(" ", "").replace(",", ".").lower()
 
 
+def es_error_com_reintentable(error):
+    if not isinstance(error, pywintypes.com_error):
+        return False
+
+    hresult = error.args[0] if error.args else None
+    return hresult in COM_HRESULTS_REINTENTABLES
+
+
+def mensaje_error_com(error):
+    hresult = error.args[0] if getattr(error, "args", None) else None
+
+    if hresult in {-2146959355, -2079063787, -2147352567}:
+        return (
+            "Outlook o Word no respondio a tiempo. Si Outlook muestra una ventana "
+            "preguntando si desea conectar, pulse Conectar y vuelva a intentar."
+        )
+
+    if hresult in {-2147418111, -2147417846}:
+        return (
+            "Outlook o Word esta ocupado. Cierre cuadros de dialogo abiertos y vuelva a intentar."
+        )
+
+    return str(error)
+
+
+def ejecutar_com_con_reintentos(
+    accion,
+    descripcion,
+    intentos=4,
+    espera=1.5,
+    progress_callback=None
+):
+    ultimo_error = None
+
+    for intento in range(1, intentos + 1):
+        try:
+            return accion()
+        except pywintypes.com_error as error:
+            ultimo_error = error
+            if not es_error_com_reintentable(error) or intento == intentos:
+                raise
+
+            notificar_progreso(
+                progress_callback,
+                f"{descripcion}: Outlook/Word esta ocupado. Reintentando {intento + 1} de {intentos}..."
+            )
+
+            logger.warning(
+                "%s fallo por COM ocupado. Reintento %s de %s. Error: %s",
+                descripcion,
+                intento + 1,
+                intentos,
+                error
+            )
+            time.sleep(espera * intento)
+
+    raise ultimo_error
+
+
+def notificar_progreso(progress_callback, mensaje, porcentaje=None):
+    if not progress_callback:
+        return
+
+    progress_callback({
+        "mensaje": mensaje,
+        "porcentaje": porcentaje
+    })
+
+
+def obtener_textos_hijos_ventana(hwnd):
+    textos = []
+
+    def agregar_texto(child_hwnd, _extra):
+        texto = win32gui.GetWindowText(child_hwnd)
+        if texto:
+            textos.append(texto.strip())
+        return True
+
+    win32gui.EnumChildWindows(hwnd, agregar_texto, None)
+    return textos
+
+
+def buscar_boton_hijo(hwnd, texto_boton):
+    encontrado = None
+
+    def revisar_hijo(child_hwnd, _extra):
+        nonlocal encontrado
+
+        if encontrado:
+            return False
+
+        clase = win32gui.GetClassName(child_hwnd)
+        texto = win32gui.GetWindowText(child_hwnd).strip().replace("&", "")
+
+        if clase.lower() == "button" and texto_boton.lower() in texto.lower():
+            encontrado = child_hwnd
+            return False
+
+        return True
+
+    win32gui.EnumChildWindows(hwnd, revisar_hijo, None)
+    return encontrado
+
+
+def pulsar_alt_c_en_ventana(hwnd):
+    try:
+        win32gui.SetForegroundWindow(hwnd)
+    except Exception:
+        pass
+
+    time.sleep(0.2)
+    win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
+    win32api.keybd_event(ord("C"), 0, 0, 0)
+    win32api.keybd_event(ord("C"), 0, win32con.KEYEVENTF_KEYUP, 0)
+    win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
+
+
+def intentar_pulsar_conectar_outlook():
+    conectado = False
+
+    def revisar_ventana(hwnd, _extra):
+        nonlocal conectado
+
+        if conectado or not win32gui.IsWindowVisible(hwnd):
+            return True
+
+        titulo = win32gui.GetWindowText(hwnd).strip()
+        if titulo != "Microsoft Outlook":
+            return True
+
+        clase_ventana = win32gui.GetClassName(hwnd)
+        textos = obtener_textos_hijos_ventana(hwnd)
+        texto_dialogo = quitar_acentos(" ".join(textos)).lower()
+        es_dialogo_outlook = clase_ventana == "#32770"
+        es_aviso_conexion = "conexion de uso medido" in texto_dialogo
+
+        if not es_aviso_conexion and not (es_dialogo_outlook and not textos):
+            return True
+
+        boton_conectar = buscar_boton_hijo(hwnd, "Conectar")
+        if not boton_conectar:
+            logger.info(
+                "Dialogo de Outlook detectado sin boton Conectar accesible. Clase=%s Textos=%s. Pulsando Alt+C.",
+                clase_ventana,
+                textos
+            )
+            pulsar_alt_c_en_ventana(hwnd)
+            conectado = True
+            return False
+
+        logger.info("Detectada ventana de conexion medida de Outlook. Pulsando Conectar automaticamente.")
+        try:
+            win32gui.SetForegroundWindow(hwnd)
+        except Exception:
+            pass
+        try:
+            win32gui.SendMessage(boton_conectar, win32con.BM_CLICK, 0, 0)
+        except Exception:
+            logger.exception("BM_CLICK fallo. Intentando WM_COMMAND.")
+            control_id = win32gui.GetDlgCtrlID(boton_conectar)
+            win32gui.SendMessage(
+                hwnd,
+                win32con.WM_COMMAND,
+                win32api.MAKELONG(control_id, win32con.BN_CLICKED),
+                boton_conectar
+            )
+        conectado = True
+        return False
+
+    try:
+        win32gui.EnumWindows(revisar_ventana, None)
+    except Exception:
+        logger.exception("Error buscando ventana de conexion medida de Outlook")
+
+    return conectado
+
+
+def iniciar_auto_conectar_outlook(progress_callback=None, duracion_segundos=45):
+    def vigilar():
+        fin = time.time() + duracion_segundos
+
+        while time.time() < fin:
+            if intentar_pulsar_conectar_outlook():
+                notificar_progreso(
+                    progress_callback,
+                    "Outlook pidio conectar por conexion medida. Se pulso Conectar automaticamente."
+                )
+                return
+
+            time.sleep(0.5)
+
+    hilo = threading.Thread(target=vigilar, daemon=True)
+    hilo.start()
+
+
 def texto_normalizado(texto):
     texto = quitar_acentos(str(texto or "").lower())
     texto = re.sub(r'[^a-z0-9@._\s]', ' ', texto)
@@ -147,7 +382,7 @@ def texto_normalizado(texto):
 
 
 # ============================================================
-# Carga y búsqueda de personas desde personas.json
+# Carga y bÃºsqueda de personas desde personas.json
 # ============================================================
 
 PERSONAS = []
@@ -467,21 +702,29 @@ def exportar_excel(registros, carpeta_base, fecha_inicio_str, tipo_exportacion):
 def obtener_anexos(anexos, carpeta_correo):
     lista_anexos = []
 
-    if anexos.Count > 0:
+    cantidad_anexos = ejecutar_com_con_reintentos(
+        lambda: anexos.Count,
+        "Leyendo anexos"
+    )
+
+    if cantidad_anexos > 0:
         for anexo in anexos:
             nombre_archivo = limpiar_texto(anexo.FileName)
             if "image" not in nombre_archivo.lower() and "outlook" not in nombre_archivo.lower():
                 carpeta_anexos = carpeta_correo / "Anexos"
                 os.makedirs(carpeta_anexos, exist_ok=True)
                 ruta_anexo = carpeta_anexos / nombre_archivo
-                anexo.SaveAsFile(str(ruta_anexo))
+                ejecutar_com_con_reintentos(
+                    lambda: anexo.SaveAsFile(str(ruta_anexo)),
+                    "Guardando anexo"
+                )
                 lista_anexos.append(nombre_archivo)
 
     return lista_anexos
 
 
 # ============================================================
-# Fechas y configuración de Outlook
+# Fechas y configuraciÃ³n de Outlook
 # ============================================================
 
 def obtener_rango_dia(dia, mes, anio):
@@ -520,8 +763,86 @@ def obtener_config_outlook(tipo_exportacion):
     }
 
 
+def formatear_fecha_restrict_local(fecha):
+    return fecha.strftime("%d/%m/%Y %H:%M")
+
+
+def formatear_fecha_restrict_outlook(fecha):
+    return fecha.strftime("%m/%d/%Y %I:%M %p")
+
+
+def crear_filtro_fecha(campo_fecha, fecha_inicio, fecha_fin, formateador):
+    return (
+        f"[{campo_fecha}] >= '{formateador(fecha_inicio)}' "
+        f"AND [{campo_fecha}] < '{formateador(fecha_fin)}'"
+    )
+
+
+def agregar_items_restringidos(destino, vistos, items, filtro, descripcion, progress_callback=None):
+    cantidad_antes = len(destino)
+
+    try:
+        filtrados = ejecutar_com_con_reintentos(
+            lambda: items.Restrict(filtro),
+            descripcion,
+            progress_callback=progress_callback
+        )
+
+        for item in filtrados:
+            try:
+                entry_id = ejecutar_com_con_reintentos(
+                    lambda: item.EntryID,
+                    "Leyendo identificador del correo",
+                    progress_callback=progress_callback
+                )
+            except Exception:
+                entry_id = f"sin-entryid-{id(item)}"
+
+            if entry_id not in vistos:
+                destino.append(item)
+                vistos.add(entry_id)
+
+        logger.info("%s aplicado. Candidatos acumulados=%s. Filtro=%s", descripcion, len(destino), filtro)
+        return len(destino) - cantidad_antes
+
+    except Exception:
+        logger.exception("%s fallo. Filtro=%s", descripcion, filtro)
+        return 0
+
+
+def obtener_correos_candidatos(items, config, fecha_inicio, fecha_fin, progress_callback=None):
+    candidatos = []
+    vistos = set()
+
+    agregados_local = agregar_items_restringidos(
+        candidatos,
+        vistos,
+        items,
+        crear_filtro_fecha(config["campo_fecha"], fecha_inicio, fecha_fin, formatear_fecha_restrict_local),
+        "Filtrando correos por fecha local",
+        progress_callback=progress_callback
+    )
+
+    if agregados_local > 0:
+        return candidatos
+
+    agregar_items_restringidos(
+        candidatos,
+        vistos,
+        items,
+        crear_filtro_fecha(config["campo_fecha"], fecha_inicio, fecha_fin, formatear_fecha_restrict_outlook),
+        "Filtrando correos por fecha Outlook",
+        progress_callback=progress_callback
+    )
+
+    return candidatos
+
+
 def obtener_fecha_mail(mail, atributo_fecha):
-    fecha = getattr(mail, atributo_fecha)
+    fecha = ejecutar_com_con_reintentos(
+        lambda: getattr(mail, atributo_fecha),
+        "Leyendo fecha del correo"
+    )
     return datetime(fecha.year, fecha.month, fecha.day, fecha.hour, fecha.minute, fecha.second)
 
 
@@ -535,38 +856,94 @@ def obtener_nombre_para_carpeta(tipo_exportacion, remitente, destinatarios_raw):
     return remitente or "Sin remitente"
 
 
+def eliminar_temporal_con_reintentos(path, intentos=5, espera=0.4):
+    for intento in range(1, intentos + 1):
+        try:
+            if path.exists():
+                os.remove(path)
+            return True
+        except PermissionError:
+            if intento == intentos:
+                logger.warning("No se pudo borrar el temporal despues de %s intentos: %s", intentos, path)
+                return False
+            time.sleep(espera * intento)
+
+
+def limpiar_carpeta_si_vacia(path):
+    try:
+        if path.exists() and path.is_dir() and not any(path.iterdir()):
+            path.rmdir()
+            return True
+    except Exception:
+        logger.exception("No se pudo limpiar carpeta vacia: %s", path)
+
+    return False
+
+
 # ============================================================
-# Conversión correo a PDF / MSG
+# ConversiÃ³n correo a PDF
 # ============================================================
 
-def convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio):
+def convertir_correo_a_pdf(mail, word, carpeta_correo, asunto_limpio, progress_callback=None):
     mht_path = carpeta_correo / f"{asunto_limpio}.mht"
     pdf_path = carpeta_correo / f"{asunto_limpio}.pdf"
-    msg_path = carpeta_correo / f"{asunto_limpio}.msg"
+    doc = None
 
     try:
-        mail.SaveAs(str(mht_path), 10)
-        doc = word.Documents.Open(str(mht_path))
+        ejecutar_com_con_reintentos(
+            lambda: mail.SaveAs(str(mht_path), 10),
+            "Guardando correo temporal",
+            progress_callback=progress_callback
+        )
 
-        for shape in doc.InlineShapes:
-            if shape.Type in [1, 3, 4, 5]:
-                max_width = 800
-                if shape.Width > max_width:
-                    ratio = max_width / shape.Width
-                    shape.Width = max_width
-                    shape.Height = shape.Height * ratio
+        doc = ejecutar_com_con_reintentos(
+            lambda: word.Documents.Open(
+                str(mht_path),
+                ConfirmConversions=False,
+                ReadOnly=True,
+                AddToRecentFiles=False,
+                Visible=False
+            ),
+            "Abriendo correo en Word",
+            progress_callback=progress_callback
+        )
 
-        doc.ExportAsFixedFormat(OutputFileName=str(pdf_path), ExportFormat=17)
-        doc.Close(False)
-
-        if mht_path.exists():
-            os.remove(mht_path)
-
-    except Exception:
         try:
-            mail.SaveAs(str(msg_path), 3)
-        except Exception as e:
-            raise RuntimeError(f"No se pudo guardar el correo como PDF ni MSG: {e}")
+            for shape in doc.InlineShapes:
+                if shape.Type in [1, 3, 4, 5]:
+                    max_width = 800
+                    if shape.Width > max_width:
+                        ratio = max_width / shape.Width
+                        shape.Width = max_width
+                        shape.Height = shape.Height * ratio
+        except pywintypes.com_error:
+            pass
+
+        ejecutar_com_con_reintentos(
+            lambda: doc.ExportAsFixedFormat(OutputFileName=str(pdf_path), ExportFormat=17),
+            "Exportando PDF",
+            progress_callback=progress_callback
+        )
+
+        doc.Close(False)
+        doc = None
+
+        eliminar_temporal_con_reintentos(mht_path)
+
+        return pdf_path
+
+    except Exception as error_pdf:
+        logger.exception("No se pudo convertir el correo a PDF. Asunto: %s", asunto_limpio)
+        raise RuntimeError(f"No se pudo convertir el correo a PDF: {error_pdf}") from error_pdf
+
+    finally:
+        if doc is not None:
+            try:
+                doc.Close(False)
+            except Exception:
+                pass
+
+        eliminar_temporal_con_reintentos(mht_path)
 
 
 # ============================================================
@@ -575,17 +952,24 @@ def convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio):
 
 def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fecha=None, progress_callback=None):
     """
-    Procesa una exportación sin pedir datos por consola.
+    Procesa una exportaciÃ³n sin pedir datos por consola.
 
     tipo_exportacion: "recibidos" o "enviados"
     fecha_inicio: datetime inicial inclusivo
     fecha_fin: datetime final exclusivo
     etiqueta_fecha: texto para nombre de carpeta/Excel. Ej: 2026-05-08 o 2026-05
-    progress_callback: función opcional que recibe texto de progreso.
+    progress_callback: funciÃ³n opcional que recibe texto de progreso.
     """
 
     init(autoreset=True)
     inicializar_personas()
+    logger.info(
+        "Inicio exportacion. Tipo=%s, fecha_inicio=%s, fecha_fin=%s, etiqueta=%s",
+        tipo_exportacion,
+        fecha_inicio,
+        fecha_fin,
+        etiqueta_fecha
+    )
 
     if tipo_exportacion not in ["recibidos", "enviados"]:
         raise ValueError("tipo_exportacion debe ser 'recibidos' o 'enviados'.")
@@ -602,28 +986,58 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
         / etiqueta_fecha
     )
 
-    if progress_callback:
-        progress_callback("Conectando con Outlook...")
+    notificar_progreso(progress_callback, "Conectando con Outlook...", 5)
 
-    outlook_app = win32com.client.gencache.EnsureDispatch("Outlook.Application")
-    outlook = outlook_app.GetNamespace("MAPI")
-    carpeta = outlook.GetDefaultFolder(config["folder_id"])
-
-    filtro = (
-        f"[{config['campo_fecha']}] >= '{fecha_inicio.strftime('%d/%m/%Y %H:%M')}' "
-        f"AND [{config['campo_fecha']}] < '{fecha_fin.strftime('%d/%m/%Y %H:%M')}'"
-    )
-
-    items = carpeta.Items
-    items.Sort(f"[{config['campo_fecha']}]", config["sort_desc"])
-    items_filtrados = items.Restrict(filtro)
+    iniciar_auto_conectar_outlook(progress_callback)
 
     try:
-        total_filtrados = items_filtrados.Count
-    except Exception:
-        total_filtrados = 0
+        outlook_app = ejecutar_com_con_reintentos(
+            lambda: win32com.client.gencache.EnsureDispatch("Outlook.Application"),
+            "Conectando con Outlook",
+            intentos=3,
+            espera=2,
+            progress_callback=progress_callback
+        )
+        outlook = ejecutar_com_con_reintentos(
+            lambda: outlook_app.GetNamespace("MAPI"),
+            "Abriendo perfil de Outlook",
+            intentos=3,
+            espera=2,
+            progress_callback=progress_callback
+        )
+        carpeta = ejecutar_com_con_reintentos(
+            lambda: outlook.GetDefaultFolder(config["folder_id"]),
+            "Abriendo carpeta de Outlook",
+            intentos=3,
+            espera=2,
+            progress_callback=progress_callback
+        )
+    except pywintypes.com_error as error:
+        logger.exception("Error conectando con Outlook")
+        raise RuntimeError(mensaje_error_com(error)) from error
+
+    items = ejecutar_com_con_reintentos(
+        lambda: carpeta.Items,
+        "Leyendo correos de Outlook",
+        progress_callback=progress_callback
+    )
+    ejecutar_com_con_reintentos(
+        lambda: items.Sort(f"[{config['campo_fecha']}]", config["sort_desc"]),
+        "Ordenando correos",
+        progress_callback=progress_callback
+    )
+
+    items_filtrados = obtener_correos_candidatos(
+        items,
+        config,
+        fecha_inicio,
+        fecha_fin,
+        progress_callback=progress_callback
+    )
+    total_filtrados = len(items_filtrados)
 
     if total_filtrados == 0:
+        logger.info("Exportacion sin correos encontrados. Tipo=%s, etiqueta=%s", tipo_exportacion, etiqueta_fecha)
         return ResultadoExportacion(
             exito=False,
             cantidad=0,
@@ -632,41 +1046,91 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
             mensaje="No se encontraron correos en el rango especificado."
         )
 
-    if progress_callback:
-        progress_callback(f"Se encontraron {total_filtrados} correos. Abriendo Word...")
+    notificar_progreso(progress_callback, f"Se encontraron {total_filtrados} correos. Abriendo Word...", 12)
+    logger.info("Correos filtrados: %s", total_filtrados)
 
-    word = win32com.client.gencache.EnsureDispatch("Word.Application")
+    word = ejecutar_com_con_reintentos(
+        lambda: win32com.client.gencache.EnsureDispatch("Word.Application"),
+        "Abriendo Word",
+        intentos=3,
+        espera=2,
+        progress_callback=progress_callback
+    )
     word.Visible = False
     try:
         word.DisplayAlerts = 0
     except Exception:
         pass
+    try:
+        word.ScreenUpdating = False
+    except Exception:
+        pass
+    try:
+        word.Options.CheckSpellingAsYouType = False
+        word.Options.CheckGrammarAsYouType = False
+    except Exception:
+        pass
 
     registros = []
     procesados = 0
+    omitidos = 0
+    errores = 0
 
     try:
         for mail in items_filtrados:
+            carpeta_correo = None
             try:
-                if mail.Class != 43:
+                mail_class = ejecutar_com_con_reintentos(
+                    lambda: mail.Class,
+                    "Leyendo tipo de correo",
+                    progress_callback=progress_callback
+                )
+                if mail_class != 43:
+                    omitidos += 1
                     continue
 
                 fecha_py = obtener_fecha_mail(mail, config["atributo_fecha"])
                 if not (fecha_inicio <= fecha_py < fecha_fin):
+                    omitidos += 1
                     continue
 
-                remitente = mail.SenderName or ""
-                anexos = mail.Attachments
-                asunto = mail.Subject or ""
-                destinatarios_raw = mail.To or ""
-                cc = mail.CC or ""
+                remitente = ejecutar_com_con_reintentos(
+                    lambda: mail.SenderName or "",
+                    "Leyendo remitente",
+                    progress_callback=progress_callback
+                )
+                anexos = ejecutar_com_con_reintentos(
+                    lambda: mail.Attachments,
+                    "Leyendo anexos",
+                    progress_callback=progress_callback
+                )
+                asunto = ejecutar_com_con_reintentos(
+                    lambda: mail.Subject or "",
+                    "Leyendo asunto",
+                    progress_callback=progress_callback
+                )
+                destinatarios_raw = ejecutar_com_con_reintentos(
+                    lambda: mail.To or "",
+                    "Leyendo destinatarios",
+                    progress_callback=progress_callback
+                )
+                cc = ejecutar_com_con_reintentos(
+                    lambda: mail.CC or "",
+                    "Leyendo copias",
+                    progress_callback=progress_callback
+                )
 
                 if tipo_exportacion == "recibidos" and remitente in REMITENTES_OMITIDOS:
+                    omitidos += 1
                     continue
 
                 procesados += 1
-                if progress_callback:
-                    progress_callback(f"Procesando correo {procesados} de {total_filtrados}: {asunto[:80]}")
+                porcentaje = 15 + int((procesados / total_filtrados) * 75)
+                notificar_progreso(
+                    progress_callback,
+                    f"Procesando correo {procesados} de {total_filtrados}: {asunto[:80]}",
+                    porcentaje
+                )
 
                 nombre_carpeta_base = obtener_nombre_para_carpeta(
                     tipo_exportacion,
@@ -689,7 +1153,13 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                 os.makedirs(carpeta_correo, exist_ok=True)
 
                 asunto_limpio = limpiar_texto(asunto) or "Sin asunto"
-                convertir_correo_a_pdf_o_msg(mail, word, carpeta_correo, asunto_limpio)
+                convertir_correo_a_pdf(
+                    mail,
+                    word,
+                    carpeta_correo,
+                    asunto_limpio,
+                    progress_callback=progress_callback
+                )
 
                 remitente_filtrado = nombres_conocidos_rem(remitente, fecha_py)
                 cargo, dependencia = obtener_info_remitente(remitente, fecha_py)
@@ -709,7 +1179,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                 )
 
                 registros.append({
-                    "Tipo de Documento": "CORREO INSTITUCIONAL",
+                    "Tipo del Documento": "CORREO INSTITUCIONAL",
                     "Fecha del Documento": fecha_py.strftime("%Y-%m-%d"),
                     "Remitente": nompropio_python(remitente_filtrado),
                     "Cargo": cargo,
@@ -722,8 +1192,11 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                 })
 
             except Exception as e:
-                if progress_callback:
-                    progress_callback(f"Error procesando un correo: {e}")
+                errores += 1
+                logger.exception("Error procesando un correo. Procesados=%s", procesados)
+                if carpeta_correo:
+                    limpiar_carpeta_si_vacia(carpeta_correo)
+                notificar_progreso(progress_callback, f"Error procesando un correo: {e}")
 
     finally:
         try:
@@ -732,57 +1205,79 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
             pass
 
     if not registros:
+        logger.info("Exportacion sin registros validos. Tipo=%s, etiqueta=%s", tipo_exportacion, etiqueta_fecha)
         return ResultadoExportacion(
             exito=False,
             cantidad=0,
             carpeta=carpeta_base,
             excel=None,
-            mensaje="No se encontraron correos válidos para exportar."
+            mensaje=(
+                "No se encontraron correos validos para exportar. "
+                f"Candidatos: {total_filtrados}. Omitidos: {omitidos}. Errores: {errores}."
+            ),
+            total=total_filtrados,
+            errores=errores,
+            omitidos=omitidos
         )
 
-    if progress_callback:
-        progress_callback("Creando archivo Excel...")
+    notificar_progreso(progress_callback, "Creando archivo Excel...", 94)
 
     ruta_excel = exportar_excel(registros, carpeta_base, etiqueta_fecha, tipo_exportacion)
+    logger.info(
+        "Exportacion terminada. Registros=%s, omitidos=%s, errores=%s, carpeta=%s, excel=%s",
+        len(registros),
+        omitidos,
+        errores,
+        carpeta_base,
+        ruta_excel
+    )
+
+    notificar_progreso(progress_callback, "Exportacion completada.", 100)
 
     return ResultadoExportacion(
         exito=True,
         cantidad=len(registros),
         carpeta=carpeta_base,
         excel=ruta_excel,
-        mensaje=f"Exportación completada correctamente: {len(registros)} registros."
+        mensaje=(
+            f"Exportacion completada. Exportados: {len(registros)}. "
+            f"Omitidos: {omitidos}. Errores: {errores}."
+        ),
+        total=total_filtrados,
+        errores=errores,
+        omitidos=omitidos
     )
 
 
 # ============================================================
-# Modo consola básico, solo para compatibilidad/pruebas
+# Modo consola bÃ¡sico, solo para compatibilidad/pruebas
 # ============================================================
 
 def pedir_fecha():
     while True:
         try:
-            dia = input("Día (1-31): ")
+            dia = input("DÃ­a (1-31): ")
             mes = input("Mes (1-12): ")
-            anio = input("Año (4 dígitos): ")
+            anio = input("AÃ±o (4 dÃ­gitos): ")
             return obtener_rango_dia(dia, mes, anio)
         except ValueError:
-            print(Fore.RED + "\nFecha inválida. Intente nuevamente.\n")
+            print(Fore.RED + "\nFecha invÃ¡lida. Intente nuevamente.\n")
 
 
 def pedir_tipo_exportacion():
     while True:
-        print("¿Qué desea exportar?")
+        print("Â¿QuÃ© desea exportar?")
         print("1. Correos recibidos")
         print("2. Correos enviados")
 
-        opcion = input("\nSeleccione una opción (1 o 2): ").strip()
+        opcion = input("\nSeleccione una opciÃ³n (1 o 2): ").strip()
 
         if opcion == "1":
             return "recibidos"
         if opcion == "2":
             return "enviados"
 
-        print(Fore.RED + "\nOpción inválida. Escriba 1 o 2.\n")
+        print(Fore.RED + "\nOpciÃ³n invÃ¡lida. Escriba 1 o 2.\n")
 
 
 def procesar():

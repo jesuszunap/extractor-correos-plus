@@ -1,4 +1,6 @@
 import os
+import ctypes
+import logging
 import subprocess
 import sys
 import threading
@@ -8,6 +10,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pythoncom
 from extractor_de_correos import (
+    LOG_PATH,
     procesar_exportacion,
     obtener_rango_dia,
     obtener_rango_mes,
@@ -19,12 +22,16 @@ from extractor_de_correos import (
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = BASE_DIR.parent
 CONFIGURADOR_PY = BASE_DIR / "configurar_personas.py"
 PERSONAS_JSON = BASE_DIR / "personas.json"
+ICON_PATH = PROJECT_DIR / "icons" / "icono_mail.ico"
 
 APP_NAME = "Extractor Correos +"
-ANIO_MINIMO = 2008
 ANIO_ACTUAL = datetime.now().year
+ANIOS_HISTORICO_SELECTOR = 3
+
+logger = logging.getLogger("extractor_correos.gui")
 
 
 # ============================================================
@@ -67,6 +74,22 @@ def ejecutar_python_oculto(path: Path):
     return subprocess.Popen([str(executable), str(path)], **kwargs)
 
 
+def configurar_icono_ventana(ventana):
+    if sys.platform.startswith("win"):
+        try:
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                "ug.extractor.correos.plus"
+            )
+        except Exception:
+            logger.exception("No se pudo establecer AppUserModelID")
+
+    if ICON_PATH.exists():
+        try:
+            ventana.iconbitmap(default=str(ICON_PATH))
+        except Exception:
+            logger.exception("No se pudo establecer icono de ventana: %s", ICON_PATH)
+
+
 # ============================================================
 # Aplicación principal
 # ============================================================
@@ -76,6 +99,7 @@ class MenuPrincipalApp(tk.Tk):
         super().__init__()
 
         self.title(APP_NAME)
+        configurar_icono_ventana(self)
         self.geometry("820x660")
         self.minsize(820, 660)
         self.resizable(True, True)
@@ -200,7 +224,10 @@ class MenuPrincipalApp(tk.Tk):
         self.mes_combo.current(datetime.now().month - 1)
 
         ttk.Label(frame_fecha, text="Año:").grid(row=1, column=4, sticky="w")
-        self.anios_display = [str(a) for a in range(ANIO_ACTUAL, ANIO_MINIMO - 1, -1)]
+        self.anios_display = [
+            str(a)
+            for a in range(ANIO_ACTUAL, ANIO_ACTUAL - ANIOS_HISTORICO_SELECTOR - 1, -1)
+        ]
 
         self.anio_combo = ttk.Combobox(
             frame_fecha,
@@ -226,7 +253,7 @@ class MenuPrincipalApp(tk.Tk):
         frame_progreso = ttk.LabelFrame(contenedor, text="Progreso", padding=14, style="Seccion.TLabelframe")
         frame_progreso.pack(fill="x", pady=(0, 14))
 
-        self.progress = ttk.Progressbar(frame_progreso, mode="indeterminate")
+        self.progress = ttk.Progressbar(frame_progreso, mode="determinate", maximum=100)
         self.progress.pack(fill="x", pady=(0, 10))
 
         self.label_estado_progreso = ttk.Label(
@@ -335,11 +362,12 @@ class MenuPrincipalApp(tk.Tk):
             self.actualizar_modo_fecha()
 
         if exportando:
-            self.progress.start(12)
+            self.progress["value"] = 0
             self.boton_abrir_carpeta.pack_forget()
             self.resultado_carpeta = None
         else:
-            self.progress.stop()
+            if self.progress["value"] < 100:
+                self.progress["value"] = 0
 
     # --------------------------------------------------------
     # Exportación
@@ -348,6 +376,8 @@ class MenuPrincipalApp(tk.Tk):
     def iniciar_exportacion(self):
         if self.exportando:
             return
+
+        logger.info("Usuario inicio exportacion desde GUI")
 
         if not existe_archivo(PERSONAS_JSON, "personas.json"):
             respuesta = messagebox.askyesno(
@@ -393,12 +423,31 @@ class MenuPrincipalApp(tk.Tk):
         finally:
             pythoncom.CoUninitialize()
 
-    def actualizar_progreso_desde_hilo(self, mensaje):
-        self.after(0, lambda: self.estado_var.set(str(mensaje)))
+    def actualizar_progreso_desde_hilo(self, progreso):
+        def aplicar_progreso():
+            if isinstance(progreso, dict):
+                mensaje = progreso.get("mensaje", "")
+                porcentaje = progreso.get("porcentaje")
+
+                if porcentaje is not None:
+                    self.progress["value"] = max(0, min(100, int(porcentaje)))
+
+                self.estado_var.set(str(mensaje))
+                return
+
+            self.estado_var.set(str(progreso))
+
+        self.after(0, aplicar_progreso)
 
     def finalizar_exportacion(self, resultado):
         self.set_exportando(False)
         self.estado_var.set(resultado.mensaje)
+        logger.info(
+            "Exportacion finalizada en GUI. Exito=%s, cantidad=%s, carpeta=%s",
+            resultado.exito,
+            resultado.cantidad,
+            resultado.carpeta
+        )
 
         if resultado.exito and resultado.carpeta:
             self.resultado_carpeta = resultado.carpeta
@@ -411,7 +460,27 @@ class MenuPrincipalApp(tk.Tk):
     def exportacion_con_error(self, error):
         self.set_exportando(False)
         self.estado_var.set("Ocurrió un error durante la exportación.")
-        messagebox.showerror("Error", str(error))
+        logger.error(
+            "Error durante la exportacion desde GUI",
+            exc_info=(type(error), error, error.__traceback__)
+        )
+        mensaje = str(error)
+
+        if "-2146959355" in mensaje or "-2079063787" in mensaje or "0x84140115" in mensaje:
+            mensaje = (
+                "Outlook o Word no respondio a tiempo.\n\n"
+                "Revise si Outlook tiene una ventana abierta preguntando si desea conectar, "
+                "pulse Conectar y vuelva a intentar.\n\n"
+                "Si la conexion esta lenta, espere unos minutos y ejecute nuevamente."
+            )
+        elif "-2147418111" in mensaje or "-2147417846" in mensaje:
+            mensaje = (
+                "Outlook o Word esta ocupado.\n\n"
+                "Cierre cuadros de dialogo abiertos de Outlook/Word y vuelva a intentar."
+            )
+
+        self.estado_var.set("Ocurrio un error durante la exportacion.")
+        messagebox.showerror("Error", f"{mensaje}\n\nLog:\n{LOG_PATH}")
 
     def abrir_carpeta_resultado(self):
         if not self.resultado_carpeta:

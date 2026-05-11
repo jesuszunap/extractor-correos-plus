@@ -1,51 +1,84 @@
-# Extractor de Correos – Automatizado y Fácil de Usar
+# Extractor Correos +
 
-Este proyecto permite **exportar correos de Outlook**, junto con sus anexos e información relevante, hacia archivos Excel y carpetas organizadas por fecha.  
-Está diseñado especialmente para que pueda ser usado por personas sin conocimientos técnicos, gracias a un archivo `ejecutar.bat` que:
+Aplicacion interna para exportar correos de Outlook clasico a carpetas organizadas, con PDF del correo, anexos y Excel resumen.
 
-- Actualiza el programa automáticamente
-- Instala las dependencias necesarias
-- Ejecuta el script principal en un solo clic
+## Requisitos
 
----
+- Windows.
+- Outlook clasico configurado con la cuenta institucional.
+- Microsoft Word clasico instalado.
+- Python 3.x.
+- Dependencias de `docs/requirements.txt`.
 
-## 📨 ¿Qué hace este programa?
+Instalacion de dependencias:
 
-- Lee correos de una carpeta específica en Outlook  
-- Extrae:
-  - Remitente
-  - Asunto
-  - Fecha
-  - Cuerpo del mensaje
-  - Anexos
-- Guarda todo en un archivo Excel organizado
-- Crea una carpeta por correo y almacena allí los anexos
-- Controla errores comunes para evitar interrupciones
+```powershell
+python -m pip install -r docs/requirements.txt
+```
 
----
+## Uso
 
-## 🔧 Requisitos (para Windows):
+1. Ejecutar `Crear acceso directo.bat` una vez para crear el acceso directo del escritorio.
+2. Abrir `Extractor Correos +`.
+3. Elegir `Correos recibidos` o `Correos enviados`.
+4. Elegir dia, mes y anio, o marcar `Exportar mes completo`.
+5. Presionar `Exportar correos`.
+6. Al finalizar, usar `Abrir carpeta de exportacion`.
 
-1. **Outlook (classic) instalado y con sesión iniciada**
-2. **Python 3.10 o superior**  
-   Descargar en: https://www.python.org/downloads/  
-   *Activar “Add Python to PATH” durante la instalación.*
-3. **Git para Windows**
-   Descargar en: https://git-scm.com/download/win
+## Configuracion recomendada de Outlook
 
----
+El programa depende de Outlook clasico mediante COM/MAPI. Para evitar bloqueos:
 
-## 🛠 Instalación (solo la primera vez)
+- Abrir Outlook clasico antes de exportar, si es posible.
+- En el icono de Outlook de la bandeja de Windows, desmarcar `Mostrar advertencias de red`.
+- Si se necesitan correos antiguos, configurar la cuenta Exchange para descargar `Todo` el historial.
+- Esperar a que Outlook termine de sincronizar antes de exportar meses o fechas antiguas.
 
-1. Instalar Python y Git.
-2. Abrir CMD (o símbolo del sistema).
-3. Copiar, pegar, y ejecutar lo siguiente:
-   
-cd Documents
+Si Outlook muestra el mensaje de conexion de uso medido, pulse `Conectar` o desactive las advertencias de red.
 
-y luego:
+## Salida generada
 
-git clone https://github.com/thnylpz/extractor-correos.git
+La exportacion se crea en `Downloads`, con una estructura similar a:
 
+```txt
+Downloads/
+  Correos Enviados Enero - 2025/
+    2025-01-09/
+      2025-01-09_CorreosEnviadosExportados.xlsx
+      115114_DESTINATARIO/
+        asunto.pdf
+        Anexos/
+```
 
+Cada correo exportado debe tener PDF. Los archivos `.mht` se usan solo como temporales y se eliminan automaticamente. No se genera respaldo `.msg`.
 
+## Personas y cargos
+
+Las personas se administran en:
+
+```txt
+src/personas.json
+```
+
+Desde la ventana principal se puede abrir `Configurar personas` para agregar, editar, eliminar o duplicar cargos historicos. Antes de guardar, el configurador crea un backup en:
+
+```txt
+src/backups_personas/
+```
+
+## Logs
+
+Los errores y detalles tecnicos se guardan en:
+
+```txt
+logs/extractor_correos.log
+```
+
+Ese archivo sirve para diagnosticar fallos de Outlook, Word, conversion a PDF, anexos o filtros de fecha.
+
+## Problemas comunes
+
+- `No esta conectado`: Outlook no termino de conectarse o mostro una advertencia de red.
+- No aparecen correos antiguos: Outlook no tiene sincronizado todo el historial.
+- Exportacion lenta: convertir correos a PDF con Word puede tardar, especialmente si tienen imagenes o anexos grandes.
+- PDF fallido: revisar `logs/extractor_correos.log`.
