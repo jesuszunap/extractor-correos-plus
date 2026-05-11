@@ -34,7 +34,7 @@ El programa depende de Outlook clasico mediante COM/MAPI. Para evitar bloqueos:
 - Si se necesitan correos antiguos, configurar la cuenta Exchange para descargar `Todo` el historial.
 - Esperar a que Outlook termine de sincronizar antes de exportar meses o fechas antiguas.
 
-Si Outlook muestra el mensaje de conexion de uso medido, pulse `Conectar` o desactive las advertencias de red.
+Si Outlook muestra el mensaje de conexion de uso medido, el programa intenta pulsar `Conectar` automaticamente usando `pywinauto`. Si no lo consigue, pulse `Conectar` manualmente y revise `logs/extractor_correos.log`.
 
 ## Salida generada
 

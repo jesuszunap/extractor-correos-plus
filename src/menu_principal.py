@@ -144,7 +144,24 @@ class MenuPrincipalApp(tk.Tk):
         style.configure("TCheckbutton", font=("Segoe UI", 13))
         style.configure("TEntry", font=("Segoe UI", 13), padding=4)
         style.configure("TButton", font=("Segoe UI", 13), padding=8)
-        style.configure("BotonGrande.TButton", font=("Segoe UI", 15, "bold"), padding=12)
+        style.configure(
+            "BotonGrande.TButton",
+            font=("Segoe UI", 16, "bold"),
+            padding=12,
+            background="#FFFFFF",
+            foreground="#000000"
+        )
+        style.map(
+            "BotonGrande.TButton",
+            background=[
+                ("active", "#F5F5F5"),
+                ("pressed", "#EDEDED"),
+                ("disabled", "#E6E6E6")
+            ],
+            foreground=[
+                ("disabled", "#777777")
+            ]
+        )
         style.configure("Info.TLabel", font=("Segoe UI", 12))
 
     # --------------------------------------------------------

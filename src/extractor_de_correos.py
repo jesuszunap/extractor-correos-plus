@@ -4,12 +4,11 @@ import json
 import time
 import logging
 import threading
+import sys
 import unicodedata
 import win32com.client
 import pywintypes
-import win32con
-import win32gui
-import win32api
+import pythoncom
 import pandas as pd
 
 from datetime import datetime, timedelta
@@ -22,6 +21,32 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 from colorama import init, Fore
+
+
+def cargar_pywinauto_desktop():
+    tenia_frozen = hasattr(sys, "frozen")
+    frozen_original = getattr(sys, "frozen", None)
+
+    try:
+        sys.frozen = "console_exe"
+        from pywinauto import Desktop, mouse
+        return Desktop, mouse
+    except ImportError:
+        return None, None
+    except Exception:
+        logging.getLogger("extractor_correos").exception("No se pudo cargar pywinauto")
+        return None, None
+    finally:
+        if tenia_frozen:
+            sys.frozen = frozen_original
+        else:
+            try:
+                delattr(sys, "frozen")
+            except AttributeError:
+                pass
+
+
+Desktop, pywinauto_mouse = cargar_pywinauto_desktop()
 
 
 # ============================================================
@@ -248,127 +273,110 @@ def notificar_progreso(progress_callback, mensaje, porcentaje=None):
     })
 
 
-def obtener_textos_hijos_ventana(hwnd):
-    textos = []
-
-    def agregar_texto(child_hwnd, _extra):
-        texto = win32gui.GetWindowText(child_hwnd)
-        if texto:
-            textos.append(texto.strip())
-        return True
-
-    win32gui.EnumChildWindows(hwnd, agregar_texto, None)
-    return textos
-
-
-def buscar_boton_hijo(hwnd, texto_boton):
-    encontrado = None
-
-    def revisar_hijo(child_hwnd, _extra):
-        nonlocal encontrado
-
-        if encontrado:
-            return False
-
-        clase = win32gui.GetClassName(child_hwnd)
-        texto = win32gui.GetWindowText(child_hwnd).strip().replace("&", "")
-
-        if clase.lower() == "button" and texto_boton.lower() in texto.lower():
-            encontrado = child_hwnd
-            return False
-
-        return True
-
-    win32gui.EnumChildWindows(hwnd, revisar_hijo, None)
-    return encontrado
-
-
-def pulsar_alt_c_en_ventana(hwnd):
-    try:
-        win32gui.SetForegroundWindow(hwnd)
-    except Exception:
-        pass
-
-    time.sleep(0.2)
-    win32api.keybd_event(win32con.VK_MENU, 0, 0, 0)
-    win32api.keybd_event(ord("C"), 0, 0, 0)
-    win32api.keybd_event(ord("C"), 0, win32con.KEYEVENTF_KEYUP, 0)
-    win32api.keybd_event(win32con.VK_MENU, 0, win32con.KEYEVENTF_KEYUP, 0)
-
-
 def intentar_pulsar_conectar_outlook():
-    conectado = False
-
-    def revisar_ventana(hwnd, _extra):
-        nonlocal conectado
-
-        if conectado or not win32gui.IsWindowVisible(hwnd):
-            return True
-
-        titulo = win32gui.GetWindowText(hwnd).strip()
-        if titulo != "Microsoft Outlook":
-            return True
-
-        clase_ventana = win32gui.GetClassName(hwnd)
-        textos = obtener_textos_hijos_ventana(hwnd)
-        texto_dialogo = quitar_acentos(" ".join(textos)).lower()
-        es_dialogo_outlook = clase_ventana == "#32770"
-        es_aviso_conexion = "conexion de uso medido" in texto_dialogo
-
-        if not es_aviso_conexion and not (es_dialogo_outlook and not textos):
-            return True
-
-        boton_conectar = buscar_boton_hijo(hwnd, "Conectar")
-        if not boton_conectar:
-            logger.info(
-                "Dialogo de Outlook detectado sin boton Conectar accesible. Clase=%s Textos=%s. Pulsando Alt+C.",
-                clase_ventana,
-                textos
-            )
-            pulsar_alt_c_en_ventana(hwnd)
-            conectado = True
-            return False
-
-        logger.info("Detectada ventana de conexion medida de Outlook. Pulsando Conectar automaticamente.")
-        try:
-            win32gui.SetForegroundWindow(hwnd)
-        except Exception:
-            pass
-        try:
-            win32gui.SendMessage(boton_conectar, win32con.BM_CLICK, 0, 0)
-        except Exception:
-            logger.exception("BM_CLICK fallo. Intentando WM_COMMAND.")
-            control_id = win32gui.GetDlgCtrlID(boton_conectar)
-            win32gui.SendMessage(
-                hwnd,
-                win32con.WM_COMMAND,
-                win32api.MAKELONG(control_id, win32con.BN_CLICKED),
-                boton_conectar
-            )
-        conectado = True
+    if Desktop is None or pywinauto_mouse is None:
+        logger.warning("pywinauto no esta instalado. No se puede auto-pulsar Conectar en Outlook.")
         return False
 
-    try:
-        win32gui.EnumWindows(revisar_ventana, None)
-    except Exception:
-        logger.exception("Error buscando ventana de conexion medida de Outlook")
+    for backend in ("uia", "win32"):
+        try:
+            escritorio = Desktop(backend=backend)
+            ventanas = escritorio.windows(title_re=".*Outlook.*", visible_only=True)
 
-    return conectado
+            for ventana in ventanas:
+                try:
+                    textos = ventana.texts()
+                    texto_ventana = quitar_acentos(" ".join(textos)).lower()
+                    titulo = ventana.window_text()
+
+                    if "microsoft outlook" not in quitar_acentos(titulo).lower():
+                        continue
+
+                    es_dialogo_conexion = (
+                        "conexion de uso medido" in texto_ventana
+                        or ("conectar" in texto_ventana and "salir de outlook" in texto_ventana)
+                    )
+
+                    es_dialogo_outlook_ciego = (
+                        titulo == "Microsoft Outlook"
+                        and len(textos) == 1
+                        and textos[0] == "Microsoft Outlook"
+                    )
+
+                    if es_dialogo_outlook_ciego:
+                        rect = ventana.rectangle()
+                        x = rect.left + int(rect.width() * 0.29)
+                        y = rect.bottom - 20
+                        ventana.set_focus()
+                        time.sleep(0.2)
+                        pywinauto_mouse.click(button="left", coords=(x, y))
+                        logger.info(
+                            "pywinauto/%s pulso Conectar por coordenadas en dialogo Outlook ciego. Rect=%s",
+                            backend,
+                            rect
+                        )
+                        return True
+
+                    if not es_dialogo_conexion:
+                        logger.info(
+                            "pywinauto/%s vio ventana Outlook no compatible. Titulo=%s Textos=%s",
+                            backend,
+                            titulo,
+                            textos
+                        )
+                        continue
+
+                    logger.info(
+                        "pywinauto/%s detecto advertencia de conexion Outlook. Titulo=%s Textos=%s",
+                        backend,
+                        titulo,
+                        textos
+                    )
+
+                    if backend == "uia":
+                        boton = ventana.child_window(title_re=".*Conectar.*", control_type="Button")
+                    else:
+                        boton = ventana.child_window(title_re=".*Conectar.*", class_name="Button")
+
+                    if not boton.exists(timeout=0.5):
+                        logger.info("pywinauto/%s no encontro boton Conectar.", backend)
+                        continue
+
+                    ventana.set_focus()
+                    time.sleep(0.2)
+                    boton.click_input()
+                    logger.info("pywinauto/%s pulso Conectar en advertencia de Outlook.", backend)
+                    return True
+
+                except Exception:
+                    logger.exception("Error intentando pulsar Conectar con pywinauto/%s", backend)
+
+        except Exception:
+            logger.exception("Error buscando ventana de conexion Outlook con pywinauto/%s", backend)
+
+    return False
 
 
 def iniciar_auto_conectar_outlook(progress_callback=None, duracion_segundos=45):
     def vigilar():
-        fin = time.time() + duracion_segundos
+        pythoncom.CoInitialize()
+        logger.info("Vigilante de conexion Outlook iniciado.")
 
-        while time.time() < fin:
-            if intentar_pulsar_conectar_outlook():
-                notificar_progreso(
-                    progress_callback,
-                    "Outlook pidio conectar por conexion medida. Se pulso Conectar automaticamente."
-                )
-                return
+        try:
+            fin = time.time() + duracion_segundos
 
-            time.sleep(0.5)
+            while time.time() < fin:
+                if intentar_pulsar_conectar_outlook():
+                    notificar_progreso(
+                        progress_callback,
+                        "Outlook pidio conectar por conexion medida. Se pulso Conectar automaticamente."
+                    )
+                    return
+
+                time.sleep(0.5)
+        finally:
+            pythoncom.CoUninitialize()
+            logger.info("Vigilante de conexion Outlook finalizado.")
 
     hilo = threading.Thread(target=vigilar, daemon=True)
     hilo.start()
