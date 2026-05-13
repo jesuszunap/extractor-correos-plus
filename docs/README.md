@@ -54,7 +54,13 @@ Cada correo exportado debe tener PDF. Los archivos `.mht` se usan solo como temp
 
 ## Personas y cargos
 
-Las personas se administran en:
+Las personas se administran en la ubicacion elegida al crear el acceso directo:
+
+```txt
+OneDrive/Documentos/Servidores DIOU/personas.json
+```
+
+Si se elige modo local, o si OneDrive no esta disponible, se usa:
 
 ```txt
 src/personas.json
@@ -63,7 +69,7 @@ src/personas.json
 Desde la ventana principal se puede abrir `Configurar personas` para agregar, editar, eliminar o duplicar cargos historicos. Antes de guardar, el configurador crea un backup en:
 
 ```txt
-src/backups_personas/
+backups_personas/
 ```
 
 ## Logs

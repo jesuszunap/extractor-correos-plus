@@ -9,6 +9,7 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pythoncom
+from config_rutas import obtener_personas_json
 from extractor_de_correos import (
     LOG_PATH,
     procesar_exportacion,
@@ -24,7 +25,7 @@ from extractor_de_correos import (
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
 CONFIGURADOR_PY = BASE_DIR / "configurar_personas.py"
-PERSONAS_JSON = BASE_DIR / "personas.json"
+PERSONAS_JSON = obtener_personas_json()
 ICON_PATH = PROJECT_DIR / "icons" / "icono_mail.ico"
 
 APP_NAME = "Extractor Correos +"

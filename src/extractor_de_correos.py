@@ -21,6 +21,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
 from colorama import init, Fore
+from config_rutas import obtener_personas_json
 
 
 def cargar_pywinauto_desktop():
@@ -55,7 +56,7 @@ Desktop, pywinauto_mouse = cargar_pywinauto_desktop()
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = BASE_DIR.parent
-PERSONAS_JSON = BASE_DIR / "personas.json"
+PERSONAS_JSON = obtener_personas_json()
 LOG_DIR = PROJECT_DIR / "logs"
 LOG_PATH = LOG_DIR / "extractor_correos.log"
 
@@ -478,6 +479,70 @@ def fecha_en_vigencia(persona, fecha_correo):
         return True
 
 
+def distancia_edicion_maxima_uno(a, b):
+    a = str(a or "")
+    b = str(b or "")
+
+    if a == b:
+        return True
+
+    if abs(len(a) - len(b)) > 1:
+        return False
+
+    diferencias = 0
+    i = 0
+    j = 0
+
+    while i < len(a) and j < len(b):
+        if a[i] == b[j]:
+            i += 1
+            j += 1
+            continue
+
+        diferencias += 1
+        if diferencias > 1:
+            return False
+
+        if len(a) == len(b):
+            i += 1
+            j += 1
+        elif len(a) > len(b):
+            i += 1
+        else:
+            j += 1
+
+    if i < len(a) or j < len(b):
+        diferencias += 1
+
+    return diferencias <= 1
+
+
+def contar_coincidencias_difusas(palabras_persona, palabras_texto, coincidencias_exactas):
+    pendientes_persona = [
+        palabra for palabra in palabras_persona
+        if palabra not in coincidencias_exactas and len(palabra) >= 5
+    ]
+    pendientes_texto = [
+        palabra for palabra in palabras_texto
+        if palabra not in coincidencias_exactas and len(palabra) >= 5
+    ]
+    usadas = set()
+    total = 0
+
+    for palabra_persona in pendientes_persona:
+        for palabra_texto in pendientes_texto:
+            if palabra_texto in usadas:
+                continue
+            if palabra_persona[0] != palabra_texto[0]:
+                continue
+            if distancia_edicion_maxima_uno(palabra_persona, palabra_texto):
+                usadas.add(palabra_texto)
+                total += 1
+                break
+
+    return total
+
+
 def puntuar_persona(persona, texto):
     texto_original = str(texto or "")
     texto_limpio = limpiar_nombre(texto_original)
@@ -504,8 +569,14 @@ def puntuar_persona(persona, texto):
     palabras_persona = set((nombre_limpio + " " + nombre_corto_limpio).split())
     palabras_texto = set(texto_limpio.split())
     coincidencias = palabras_persona.intersection(palabras_texto)
+    coincidencias_difusas = contar_coincidencias_difusas(
+        palabras_persona,
+        palabras_texto,
+        coincidencias
+    )
 
     score += len(coincidencias) * 12
+    score += coincidencias_difusas * 7
 
     if persona.get("activo") is True:
         score += 5
@@ -532,6 +603,33 @@ def buscar_persona(texto, fecha_correo=None, minimo=24):
         return mejor
 
     return None
+
+
+def misma_persona(persona_a, persona_b):
+    if not persona_a or not persona_b:
+        return False
+
+    id_a = persona_a.get("registro_id")
+    id_b = persona_b.get("registro_id")
+    if id_a and id_b:
+        return id_a == id_b
+
+    return (
+        persona_a.get("_nombre_limpio") == persona_b.get("_nombre_limpio")
+        and persona_a.get("_email_limpio") == persona_b.get("_email_limpio")
+    )
+
+
+def buscar_persona_remitente(remitente, remitente_email=None, fecha_correo=None):
+    persona_por_nombre = buscar_persona(remitente, fecha_correo)
+    if not remitente_email:
+        return persona_por_nombre
+
+    persona_por_email = buscar_persona(remitente_email, fecha_correo, minimo=90)
+    if persona_por_nombre and persona_por_email and misma_persona(persona_por_nombre, persona_por_email):
+        return persona_por_email
+
+    return persona_por_nombre
 
 
 def formatear_persona(persona, usar_corto=False):
@@ -568,11 +666,11 @@ def nombres_conocidos_cc(cc, fecha_correo=None):
     return "\n".join(resultado)
 
 
-def nombres_conocidos_rem(rem, fecha_correo=None):
+def nombres_conocidos_rem(rem, fecha_correo=None, remitente_email=None):
     if not rem:
         return ""
 
-    persona = buscar_persona(rem, fecha_correo)
+    persona = buscar_persona_remitente(rem, remitente_email, fecha_correo)
     if persona:
         return formatear_persona(persona, usar_corto=False)
 
@@ -620,8 +718,8 @@ def obtener_info_destinatarios(lista_nombres, fecha_correo=None):
     return "\n\n".join(destinatarios), "\n\n".join([c for c in cargos if c])
 
 
-def obtener_info_remitente(remitente, fecha_correo=None):
-    persona = buscar_persona(remitente, fecha_correo)
+def obtener_info_remitente(remitente, fecha_correo=None, remitente_email=None):
+    persona = buscar_persona_remitente(remitente, remitente_email, fecha_correo)
 
     if persona:
         return persona.get("cargo") or None, persona.get("dependencia") or None
@@ -929,6 +1027,47 @@ def obtener_fecha_mail(mail, atributo_fecha):
     return datetime(fecha.year, fecha.month, fecha.day, fecha.hour, fecha.minute, fecha.second)
 
 
+def obtener_email_remitente(mail, progress_callback=None):
+    try:
+        email = ejecutar_com_con_reintentos(
+            lambda: mail.SenderEmailAddress or "",
+            "Leyendo e-mail del remitente",
+            intentos=2,
+            espera=1,
+            progress_callback=progress_callback
+        )
+    except Exception:
+        logger.exception("No se pudo leer SenderEmailAddress del remitente")
+        email = ""
+
+    email_normalizado = normalizar_email(email)
+    if "@" in email_normalizado:
+        return email_normalizado
+
+    try:
+        sender = ejecutar_com_con_reintentos(
+            lambda: mail.Sender,
+            "Leyendo objeto remitente",
+            intentos=2,
+            espera=1,
+            progress_callback=progress_callback
+        )
+    except Exception:
+        logger.exception("No se pudo leer objeto Sender del remitente")
+        return ""
+
+    try:
+        exchange_user = sender.GetExchangeUser()
+        if exchange_user:
+            smtp = normalizar_email(exchange_user.PrimarySmtpAddress)
+            if "@" in smtp:
+                return smtp
+    except Exception:
+        logger.exception("No se pudo resolver remitente Exchange a SMTP")
+
+    return ""
+
+
 def obtener_nombre_para_carpeta(tipo_exportacion, remitente, destinatarios_raw):
     if tipo_exportacion == "enviados":
         destinatarios = cut_nombres_destinatarios(destinatarios_raw)
@@ -1185,6 +1324,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                     "Leyendo remitente",
                     progress_callback=progress_callback
                 )
+                remitente_email = obtener_email_remitente(mail, progress_callback=progress_callback)
                 anexos = ejecutar_com_con_reintentos(
                     lambda: mail.Attachments,
                     "Leyendo anexos",
@@ -1250,8 +1390,8 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
                     progress_callback=progress_callback
                 )
 
-                remitente_filtrado = nombres_conocidos_rem(remitente, fecha_py)
-                cargo, dependencia = obtener_info_remitente(remitente, fecha_py)
+                remitente_filtrado = nombres_conocidos_rem(remitente, fecha_py, remitente_email)
+                cargo, dependencia = obtener_info_remitente(remitente, fecha_py, remitente_email)
 
                 destinatarios_cortos = cut_nombres_destinatarios(destinatarios_raw)
                 destinatarios_final, cargos = obtener_info_destinatarios(destinatarios_cortos, fecha_py)
