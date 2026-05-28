@@ -183,6 +183,13 @@ def limpiar_texto(nombre):
     return f"{base}{ext.lower()}"
 
 
+def limpiar_nombre_carpeta(nombre):
+    nombre = str(nombre or "").strip()
+    nombre = re.sub(r'[\\/:*?"<>|\r\n\t]', "_", nombre)
+    nombre = re.sub(r'\s+', " ", nombre).strip()
+    return nombre[:80] or "Cuenta Outlook"
+
+
 def limpiar_prefijos_asunto(asunto):
     asunto = str(asunto or "").strip()
     asunto = re.sub(r"^((re|rv)\s*:\s*)+", "", asunto, flags=re.IGNORECASE)
@@ -284,6 +291,7 @@ def ejecutar_com_con_reintentos(
                 intentos,
                 error
             )
+            intentar_pulsar_conectar_outlook()
             time.sleep(espera * intento)
 
     raise ultimo_error
@@ -297,6 +305,37 @@ def notificar_progreso(progress_callback, mensaje, porcentaje=None):
         "mensaje": mensaje,
         "porcentaje": porcentaje
     })
+
+
+def es_dialogo_conexion_outlook(texto_ventana):
+    return (
+        "conexion de uso medido" in texto_ventana
+        or ("conectar" in texto_ventana and "salir de outlook" in texto_ventana)
+        or ("outlook" in texto_ventana and "conexion lenta" in texto_ventana)
+        or ("outlook" in texto_ventana and "conexiones lentas" in texto_ventana)
+        or ("outlook" in texto_ventana and "no esta conectado" in texto_ventana)
+        or ("outlook" in texto_ventana and "trabajar sin conexion" in texto_ventana)
+        or ("outlook" in texto_ventana and "servidor" in texto_ventana and "conectar" in texto_ventana)
+        or ("microsoft outlook" in texto_ventana and "red" in texto_ventana and "aceptar" in texto_ventana)
+    )
+
+
+def obtener_boton_dialogo_outlook(ventana, backend):
+    patrones = [".*Conectar.*", ".*Aceptar.*", ".*OK.*"]
+
+    for patron in patrones:
+        try:
+            if backend == "uia":
+                boton = ventana.child_window(title_re=patron, control_type="Button")
+            else:
+                boton = ventana.child_window(title_re=patron, class_name="Button")
+
+            if boton.exists(timeout=0.5):
+                return boton
+        except Exception:
+            logger.exception("Error buscando boton %s en dialogo Outlook/%s", patron, backend)
+
+    return None
 
 
 def intentar_pulsar_conectar_outlook():
@@ -318,10 +357,7 @@ def intentar_pulsar_conectar_outlook():
                     if "microsoft outlook" not in quitar_acentos(titulo).lower():
                         continue
 
-                    es_dialogo_conexion = (
-                        "conexion de uso medido" in texto_ventana
-                        or ("conectar" in texto_ventana and "salir de outlook" in texto_ventana)
-                    )
+                    es_dialogo_conexion = es_dialogo_conexion_outlook(texto_ventana)
 
                     es_dialogo_outlook_ciego = (
                         titulo == "Microsoft Outlook"
@@ -359,19 +395,16 @@ def intentar_pulsar_conectar_outlook():
                         textos
                     )
 
-                    if backend == "uia":
-                        boton = ventana.child_window(title_re=".*Conectar.*", control_type="Button")
-                    else:
-                        boton = ventana.child_window(title_re=".*Conectar.*", class_name="Button")
+                    boton = obtener_boton_dialogo_outlook(ventana, backend)
 
-                    if not boton.exists(timeout=0.5):
-                        logger.info("pywinauto/%s no encontro boton Conectar.", backend)
+                    if boton is None:
+                        logger.info("pywinauto/%s no encontro boton Conectar/Aceptar/OK.", backend)
                         continue
 
                     ventana.set_focus()
                     time.sleep(0.2)
                     boton.click_input()
-                    logger.info("pywinauto/%s pulso Conectar en advertencia de Outlook.", backend)
+                    logger.info("pywinauto/%s pulso boton de conexion en advertencia de Outlook.", backend)
                     return True
 
                 except Exception:
@@ -944,6 +977,123 @@ def obtener_config_outlook(tipo_exportacion):
     }
 
 
+def obtener_cuentas_outlook(progress_callback=None):
+    """
+    Lista los buzones/almacenes disponibles en el perfil clasico de Outlook.
+    Devuelve diccionarios simples para no compartir objetos COM con la GUI.
+    """
+    notificar_progreso(progress_callback, "Leyendo cuentas de Outlook...", 2)
+    iniciar_auto_conectar_outlook(progress_callback, duracion_segundos=30)
+
+    try:
+        outlook_app = ejecutar_com_con_reintentos(
+            lambda: win32com.client.gencache.EnsureDispatch("Outlook.Application"),
+            "Conectando con Outlook",
+            intentos=3,
+            espera=2,
+            progress_callback=progress_callback
+        )
+        outlook = ejecutar_com_con_reintentos(
+            lambda: outlook_app.GetNamespace("MAPI"),
+            "Abriendo perfil de Outlook",
+            intentos=3,
+            espera=2,
+            progress_callback=progress_callback
+        )
+        stores = ejecutar_com_con_reintentos(
+            lambda: outlook.Stores,
+            "Leyendo buzones de Outlook",
+            progress_callback=progress_callback
+        )
+        default_store_id = ""
+        try:
+            default_store_id = ejecutar_com_con_reintentos(
+                lambda: outlook.DefaultStore.StoreID,
+                "Leyendo buzon predeterminado",
+                intentos=2,
+                espera=1,
+                progress_callback=progress_callback
+            )
+        except Exception:
+            logger.exception("No se pudo leer el buzon predeterminado de Outlook")
+
+        cuentas = []
+        cantidad = int(stores.Count)
+        for indice in range(1, cantidad + 1):
+            try:
+                store = stores.Item(indice)
+                nombre = str(store.DisplayName or f"Buzon {indice}").strip()
+                store_id = str(store.StoreID or "").strip()
+                if not store_id:
+                    continue
+
+                cuentas.append({
+                    "id": store_id,
+                    "nombre": nombre,
+                    "indice": indice,
+                    "predeterminada": bool(default_store_id and store_id == default_store_id),
+                })
+            except Exception:
+                logger.exception("No se pudo leer el buzon de Outlook #%s", indice)
+
+        cuentas.sort(key=lambda cuenta: (not cuenta["predeterminada"], cuenta["nombre"].lower()))
+        return cuentas
+
+    except pywintypes.com_error as error:
+        logger.exception("Error listando cuentas de Outlook")
+        raise RuntimeError(mensaje_error_com(error)) from error
+
+
+def obtener_store_outlook(outlook, store_id, progress_callback=None):
+    if not store_id:
+        return None
+
+    stores = ejecutar_com_con_reintentos(
+        lambda: outlook.Stores,
+        "Leyendo buzones de Outlook",
+        progress_callback=progress_callback
+    )
+
+    for indice in range(1, int(stores.Count) + 1):
+        store = stores.Item(indice)
+        actual_id = str(store.StoreID or "").strip()
+        if actual_id == store_id:
+            return store
+
+    raise ValueError("No se encontro la cuenta seleccionada en el perfil de Outlook.")
+
+
+def obtener_carpeta_outlook(outlook, config, cuenta_outlook_id=None, progress_callback=None):
+    if cuenta_outlook_id:
+        store = obtener_store_outlook(outlook, cuenta_outlook_id, progress_callback=progress_callback)
+        nombre_store = str(store.DisplayName or "cuenta seleccionada").strip()
+        logger.info("Usando buzon Outlook seleccionado: %s", nombre_store)
+        carpeta = ejecutar_com_con_reintentos(
+            lambda: store.GetDefaultFolder(config["folder_id"]),
+            f"Abriendo {config['nombre_carpeta']} de {nombre_store}",
+            intentos=3,
+            espera=2,
+            progress_callback=progress_callback
+        )
+        return carpeta, nombre_store
+
+    carpeta = ejecutar_com_con_reintentos(
+        lambda: outlook.GetDefaultFolder(config["folder_id"]),
+        "Abriendo carpeta de Outlook",
+        intentos=3,
+        espera=2,
+        progress_callback=progress_callback
+    )
+    nombre_store = "Cuenta predeterminada de Outlook"
+
+    try:
+        nombre_store = str(outlook.DefaultStore.DisplayName or nombre_store).strip()
+    except Exception:
+        logger.exception("No se pudo leer el nombre del buzon predeterminado")
+
+    return carpeta, nombre_store
+
+
 def formatear_fecha_restrict_local(fecha):
     return fecha.strftime("%d/%m/%Y %H:%M")
 
@@ -1174,7 +1324,14 @@ def convertir_correo_a_pdf(mail, word, carpeta_correo, asunto_limpio, progress_c
 # Procesamiento backend
 # ============================================================
 
-def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fecha=None, progress_callback=None):
+def procesar_exportacion(
+    tipo_exportacion,
+    fecha_inicio,
+    fecha_fin,
+    etiqueta_fecha=None,
+    progress_callback=None,
+    cuenta_outlook_id=None
+):
     """
     Procesa una exportaciÃ³n sin pedir datos por consola.
 
@@ -1188,11 +1345,12 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
     init(autoreset=True)
     inicializar_personas()
     logger.info(
-        "Inicio exportacion. Tipo=%s, fecha_inicio=%s, fecha_fin=%s, etiqueta=%s",
+        "Inicio exportacion. Tipo=%s, fecha_inicio=%s, fecha_fin=%s, etiqueta=%s, cuenta=%s",
         tipo_exportacion,
         fecha_inicio,
         fecha_fin,
-        etiqueta_fecha
+        etiqueta_fecha,
+        "seleccionada" if cuenta_outlook_id else "predeterminada"
     )
 
     if tipo_exportacion not in ["recibidos", "enviados"]:
@@ -1203,13 +1361,6 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
     mes_name = MESES[fecha_inicio.month]
     anio = str(fecha_inicio.year)
     exportacion_mes_completo = (fecha_fin - fecha_inicio).days > 1
-
-    carpeta_base = (
-        Path.home()
-        / "Downloads"
-        / f"{config['nombre_carpeta']} {mes_name} - {anio}"
-        / etiqueta_fecha
-    )
 
     notificar_progreso(progress_callback, "Conectando con Outlook...", 5)
 
@@ -1230,16 +1381,26 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
             espera=2,
             progress_callback=progress_callback
         )
-        carpeta = ejecutar_com_con_reintentos(
-            lambda: outlook.GetDefaultFolder(config["folder_id"]),
-            "Abriendo carpeta de Outlook",
-            intentos=3,
-            espera=2,
+        carpeta, nombre_cuenta_outlook = obtener_carpeta_outlook(
+            outlook,
+            config,
+            cuenta_outlook_id=cuenta_outlook_id,
             progress_callback=progress_callback
         )
     except pywintypes.com_error as error:
         logger.exception("Error conectando con Outlook")
         raise RuntimeError(mensaje_error_com(error)) from error
+
+    nombre_cuenta_carpeta = limpiar_nombre_carpeta(nombre_cuenta_outlook)
+    carpeta_base = (
+        Path.home()
+        / "Downloads"
+        / f"{config['nombre_carpeta']} {mes_name} - {anio}"
+        / nombre_cuenta_carpeta
+        / etiqueta_fecha
+    )
+    notificar_progreso(progress_callback, f"Usando cuenta Outlook: {nombre_cuenta_outlook}", 8)
+    logger.info("Carpeta de exportacion para cuenta Outlook: %s", carpeta_base)
 
     items = ejecutar_com_con_reintentos(
         lambda: carpeta.Items,
@@ -1268,7 +1429,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
             cantidad=0,
             carpeta=carpeta_base,
             excel=None,
-            mensaje="No se encontraron correos en el rango especificado."
+            mensaje=f"No se encontraron correos en el rango especificado para {nombre_cuenta_outlook}."
         )
 
     notificar_progreso(progress_callback, f"Se encontraron {total_filtrados} correos. Abriendo Word...", 12)
@@ -1455,6 +1616,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
             excel=None,
             mensaje=(
                 "No se encontraron correos validos para exportar. "
+                f"Cuenta: {nombre_cuenta_outlook}. "
                 f"Candidatos: {total_filtrados}. Omitidos: {omitidos}. Errores: {errores}."
             ),
             total=total_filtrados,
@@ -1482,7 +1644,7 @@ def procesar_exportacion(tipo_exportacion, fecha_inicio, fecha_fin, etiqueta_fec
         carpeta=carpeta_base,
         excel=ruta_excel,
         mensaje=(
-            f"Exportacion completada. Exportados: {len(registros)}. "
+            f"Exportacion completada en {nombre_cuenta_outlook}. Exportados: {len(registros)}. "
             f"Omitidos: {omitidos}. Errores: {errores}."
         ),
         total=total_filtrados,

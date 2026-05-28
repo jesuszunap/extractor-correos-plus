@@ -26,24 +26,9 @@ IF NOT EXIST "%LAUNCHER%" (
 
 cls
 echo ============================================
-echo     UBICACION DE personas.json
+echo     CREANDO ACCESO DIRECTO
 echo ============================================
 echo.
-echo [1] OneDrive ^(Documentos\Servidores DIOU^)
-echo [2] Local ^(src\personas.json^)
-echo.
-choice /C 12 /N /M "Seleccione una opcion [1/2]: "
-
-if errorlevel 2 (
-    set "PERSONAS_STORAGE=local"
-) else (
-    set "PERSONAS_STORAGE=onedrive"
-)
-
-powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "$ConfigPath = Join-Path '%~dp0src' 'config_storage.json'; " ^
-    "$Data = [ordered]@{ personas_storage = '%PERSONAS_STORAGE%' }; " ^
-    "$Data ^| ConvertTo-Json ^| Set-Content -LiteralPath $ConfigPath -Encoding UTF8"
 
 REM ===== Convertir rutas =====
 for %%A in ("%LAUNCHER%") do set "PLAUNCHER=%%~fA"
@@ -68,13 +53,8 @@ echo.
 echo Nombre:
 echo Extractor Correos +
 echo.
-echo Ubicacion elegida para personas.json:
-if /I "%PERSONAS_STORAGE%"=="onedrive" (
-    echo OneDrive - Documentos\Servidores DIOU
-    echo Si OneDrive no esta disponible, el programa usara src\personas.json.
-) else (
-    echo Local - src\personas.json
-)
+echo personas.json se usara desde:
+echo src\personas.json
 echo.
 echo El acceso directo abrira solo la ventana del programa.
 echo.

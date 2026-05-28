@@ -15,6 +15,7 @@ from extractor_de_correos import (
     procesar_exportacion,
     obtener_rango_dia,
     obtener_rango_mes,
+    obtener_cuentas_outlook,
 )
 
 
@@ -29,6 +30,8 @@ PERSONAS_JSON = obtener_personas_json()
 ICON_PATH = PROJECT_DIR / "icons" / "icono_mail.ico"
 
 APP_NAME = "Extractor Correos +"
+ANCHO_VENTANA = 820
+MARGEN_VERTICAL_PANTALLA = 80
 ANIO_ACTUAL = datetime.now().year
 ANIOS_HISTORICO_SELECTOR = 3
 
@@ -101,11 +104,12 @@ class MenuPrincipalApp(tk.Tk):
 
         self.title(APP_NAME)
         configurar_icono_ventana(self)
-        self.geometry("820x660")
-        self.minsize(820, 660)
+        self.geometry(f"{ANCHO_VENTANA}x1")
+        self.minsize(ANCHO_VENTANA, 1)
         self.resizable(True, True)
 
         self.tipo_exportacion = tk.StringVar(value="recibidos")
+        self.cuenta_outlook_var = tk.StringVar(value="Detectando cuentas de Outlook...")
         self.mes_completo = tk.BooleanVar(value=False)
 
         hoy = datetime.now()
@@ -117,11 +121,15 @@ class MenuPrincipalApp(tk.Tk):
         self.resultado_carpeta = None
         self.proceso_configurador = None
         self.exportando = False
+        self.cuentas_outlook = []
+        self.cuentas_outlook_por_display = {}
+        self.cargando_cuentas_outlook = False
 
         self.configurar_estilos()
         self.crear_interfaz()
+        self.cargar_cuentas_outlook_async()
         self.actualizar_modo_fecha()
-        self.centrar_ventana()
+        self.ajustar_ventana_al_contenido()
 
     # --------------------------------------------------------
     # Estilos
@@ -192,6 +200,27 @@ class MenuPrincipalApp(tk.Tk):
             variable=self.tipo_exportacion,
             value="enviados"
         ).grid(row=0, column=1, sticky="w")
+
+        # Cuenta Outlook
+        frame_cuenta = ttk.LabelFrame(contenedor, text="Cuenta Outlook", padding=14, style="Seccion.TLabelframe")
+        frame_cuenta.pack(fill="x", pady=(0, 14))
+
+        self.cuenta_combo = ttk.Combobox(
+            frame_cuenta,
+            textvariable=self.cuenta_outlook_var,
+            state="disabled",
+            width=62
+        )
+        self.cuenta_combo.grid(row=0, column=0, sticky="ew", padx=(0, 10))
+
+        self.boton_actualizar_cuentas = ttk.Button(
+            frame_cuenta,
+            text="Actualizar",
+            command=self.cargar_cuentas_outlook_async
+        )
+        self.boton_actualizar_cuentas.grid(row=0, column=1, sticky="ew")
+
+        frame_cuenta.columnconfigure(0, weight=1)
 
         # Fecha
         frame_fecha = ttk.LabelFrame(contenedor, text="Fecha de exportación", padding=14, style="Seccion.TLabelframe")
@@ -311,6 +340,89 @@ class MenuPrincipalApp(tk.Tk):
         frame_herramientas.columnconfigure(1, weight=1)
 
     # --------------------------------------------------------
+    # Cuentas Outlook
+    # --------------------------------------------------------
+
+    def cargar_cuentas_outlook_async(self):
+        if self.cargando_cuentas_outlook:
+            return
+
+        self.cargando_cuentas_outlook = True
+        self.cuenta_outlook_var.set("Detectando cuentas de Outlook...")
+        self.cuenta_combo.config(values=[], state="disabled")
+        self.boton_actualizar_cuentas.config(state="disabled")
+
+        hilo = threading.Thread(
+            target=self.cargar_cuentas_outlook_en_hilo,
+            daemon=True
+        )
+        hilo.start()
+
+    def cargar_cuentas_outlook_en_hilo(self):
+        pythoncom.CoInitialize()
+
+        try:
+            cuentas = obtener_cuentas_outlook()
+            self.after(0, lambda: self.aplicar_cuentas_outlook(cuentas))
+        except Exception as e:
+            self.after(0, lambda error=e: self.cuentas_outlook_con_error(error))
+        finally:
+            pythoncom.CoUninitialize()
+
+    def aplicar_cuentas_outlook(self, cuentas):
+        self.cargando_cuentas_outlook = False
+        self.cuentas_outlook = cuentas
+        self.cuentas_outlook_por_display = {}
+        displays = []
+        nombres_usados = {}
+
+        for cuenta in cuentas:
+            base = cuenta["nombre"]
+            if cuenta.get("predeterminada"):
+                base = f"{base} (predeterminada)"
+
+            cantidad = nombres_usados.get(base, 0) + 1
+            nombres_usados[base] = cantidad
+            display = base if cantidad == 1 else f"{base} #{cantidad}"
+
+            displays.append(display)
+            self.cuentas_outlook_por_display[display] = cuenta
+
+        self.cuenta_combo.config(values=displays)
+
+        if displays:
+            self.cuenta_outlook_var.set(displays[0])
+            estado = "disabled" if len(displays) == 1 else "readonly"
+            self.cuenta_combo.config(state=estado)
+            self.estado_var.set(self.obtener_estado_inicial())
+        else:
+            self.cuenta_outlook_var.set("Cuenta predeterminada de Outlook")
+            self.cuenta_combo.config(state="disabled")
+            self.estado_var.set("No se detectaron cuentas. Se usara Outlook predeterminado.")
+
+        self.boton_actualizar_cuentas.config(state="normal")
+        self.ajustar_ventana_al_contenido(centrar=False)
+
+    def cuentas_outlook_con_error(self, error):
+        self.cargando_cuentas_outlook = False
+        logger.error(
+            "No se pudieron listar cuentas de Outlook",
+            exc_info=(type(error), error, error.__traceback__)
+        )
+        self.cuenta_outlook_var.set("Cuenta predeterminada de Outlook")
+        self.cuenta_combo.config(values=[], state="disabled")
+        self.boton_actualizar_cuentas.config(state="normal")
+        self.estado_var.set("No se pudieron listar cuentas. Se usara Outlook predeterminado.")
+        self.ajustar_ventana_al_contenido(centrar=False)
+
+    def obtener_cuenta_outlook_seleccionada(self):
+        display = self.cuenta_outlook_var.get()
+        cuenta = self.cuentas_outlook_por_display.get(display)
+        if cuenta:
+            return cuenta["id"]
+        return None
+
+    # --------------------------------------------------------
     # Estado y validaciones
     # --------------------------------------------------------
 
@@ -375,6 +487,12 @@ class MenuPrincipalApp(tk.Tk):
         self.dia_entry.config(state=estado)
         self.mes_combo.config(state="disabled" if exportando else "readonly")
         self.anio_combo.config(state="disabled" if exportando else "readonly")
+        self.boton_actualizar_cuentas.config(state=estado)
+
+        if exportando:
+            self.cuenta_combo.config(state="disabled")
+        elif self.cuentas_outlook:
+            self.cuenta_combo.config(state="disabled" if len(self.cuentas_outlook) == 1 else "readonly")
 
         if not exportando:
             self.actualizar_modo_fecha()
@@ -386,6 +504,8 @@ class MenuPrincipalApp(tk.Tk):
         else:
             if self.progress["value"] < 100:
                 self.progress["value"] = 0
+
+        self.ajustar_ventana_al_contenido(centrar=False)
 
     # --------------------------------------------------------
     # Exportación
@@ -411,17 +531,18 @@ class MenuPrincipalApp(tk.Tk):
             messagebox.showerror("Datos inválidos", str(e))
             return
 
+        cuenta_outlook_id = self.obtener_cuenta_outlook_seleccionada()
         self.set_exportando(True)
         self.estado_var.set("Preparando exportación...")
 
         hilo = threading.Thread(
             target=self.ejecutar_exportacion_en_hilo,
-            args=(tipo, fecha_inicio, fecha_fin, etiqueta),
+            args=(tipo, fecha_inicio, fecha_fin, etiqueta, cuenta_outlook_id),
             daemon=True
         )
         hilo.start()
 
-    def ejecutar_exportacion_en_hilo(self, tipo, fecha_inicio, fecha_fin, etiqueta):
+    def ejecutar_exportacion_en_hilo(self, tipo, fecha_inicio, fecha_fin, etiqueta, cuenta_outlook_id):
         pythoncom.CoInitialize()
 
         try:
@@ -430,7 +551,8 @@ class MenuPrincipalApp(tk.Tk):
                 fecha_inicio=fecha_inicio,
                 fecha_fin=fecha_fin,
                 etiqueta_fecha=etiqueta,
-                progress_callback=self.actualizar_progreso_desde_hilo
+                progress_callback=self.actualizar_progreso_desde_hilo,
+                cuenta_outlook_id=cuenta_outlook_id
             )
 
             self.after(0, lambda: self.finalizar_exportacion(resultado))
@@ -451,9 +573,11 @@ class MenuPrincipalApp(tk.Tk):
                     self.progress["value"] = max(0, min(100, int(porcentaje)))
 
                 self.estado_var.set(str(mensaje))
+                self.ajustar_ventana_al_contenido(centrar=False)
                 return
 
             self.estado_var.set(str(progreso))
+            self.ajustar_ventana_al_contenido(centrar=False)
 
         self.after(0, aplicar_progreso)
 
@@ -474,6 +598,8 @@ class MenuPrincipalApp(tk.Tk):
             self.resultado_carpeta = None
             self.boton_abrir_carpeta.pack_forget()
             messagebox.showwarning("Sin registros", resultado.mensaje)
+
+        self.ajustar_ventana_al_contenido(centrar=False)
 
     def exportacion_con_error(self, error):
         self.set_exportando(False)
@@ -540,13 +666,27 @@ class MenuPrincipalApp(tk.Tk):
         messagebox.showinfo("Verificación", "\n".join(mensajes))
         self.estado_var.set(self.obtener_estado_inicial())
 
-    def centrar_ventana(self):
+    def ajustar_ventana_al_contenido(self, centrar=True):
         self.update_idletasks()
-        ancho = self.winfo_width()
-        alto = self.winfo_height()
-        x = (self.winfo_screenwidth() // 2) - (ancho // 2)
-        y = (self.winfo_screenheight() // 2) - (alto // 2)
+
+        ancho = max(ANCHO_VENTANA, self.winfo_reqwidth(), self.winfo_width())
+        alto_requerido = self.winfo_reqheight()
+        alto_maximo = max(500, self.winfo_screenheight() - MARGEN_VERTICAL_PANTALLA)
+        alto = min(alto_requerido, alto_maximo)
+
+        self.minsize(ANCHO_VENTANA, alto)
+
+        if centrar:
+            x = (self.winfo_screenwidth() // 2) - (ancho // 2)
+            y = max(0, (self.winfo_screenheight() // 2) - (alto // 2))
+        else:
+            x = self.winfo_x()
+            y = self.winfo_y()
+
         self.geometry(f"{ancho}x{alto}+{x}+{y}")
+
+    def centrar_ventana(self):
+        self.ajustar_ventana_al_contenido()
 
 
 if __name__ == "__main__":
